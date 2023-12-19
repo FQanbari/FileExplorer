@@ -1,8 +1,8 @@
 ﻿
 
 using FileExplorer.FileSearchLogic;
-using FileExplorer.MainApp;
 using FileExplorer.PluginInterface;
+using FileExplorer.PluginManagement;
 using FileExplorer.UserInterface;
 using System.Reflection;
 
@@ -66,7 +66,7 @@ public class App
         string query = consoleInterface.GetQuery();
 
         // Perform file search and display results.
-        var foundFiles = fileSearcher.SearchFilesByExtension(rootDirectory, fileExtension);
-        consoleInterface.DisplaySearchResults(foundFiles);
+        var foundFiles = fileSearcher.SearchFiles(rootDirectory, fileExtension);
+        consoleInterface.DisplaySearchResults(foundFiles.ToList());
     }
 }

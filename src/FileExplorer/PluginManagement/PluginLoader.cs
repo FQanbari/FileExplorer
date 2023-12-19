@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text;
 
-namespace FileExplorer.MainApp;
+namespace FileExplorer.PluginManagement;
 
 public class PluginLoader
 {
@@ -22,7 +22,7 @@ public class PluginLoader
         StringBuilder extension = new StringBuilder();
         for (int i = 0; i < _extenstions.Count; i++)
         {
-             extension.Append($"[{i + 1}]{_extenstions[i]} ");
+            extension.Append($"[{i + 1}]{_extenstions[i]} ");
         }
 
         return extension.ToString();
@@ -50,7 +50,7 @@ public class PluginLoader
                         //if (type.IsClass && !type.IsAbstract && typeof(IFileTypeHandler).IsAssignableFrom(type))
                         {
                             // Found a class that implements IPlugin
-                            IFileTypeHandler pluginInstance = (IFileTypeHandler)Activator.CreateInstance(type); 
+                            IFileTypeHandler pluginInstance = (IFileTypeHandler)Activator.CreateInstance(type);
                             _extenstions.Add(type.FullName);
                         }
                     }
@@ -60,7 +60,7 @@ public class PluginLoader
                     _unLoadedPlugins++;
                 }
             }
-            
+
             return null; // No compatible handler found in the assembly.
         }
         catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,5 +27,28 @@ public class FileSearcher
         return foundFiles;
     }
 
-    // Additional methods for searching by file name, content, etc. can be added here.
+    public ConcurrentBag<string> SearchFiles(string rootPath, string query)
+    {
+        var foundFiles = new ConcurrentBag<string>();
+
+        try
+        {
+            var allTxtFiles = Directory.EnumerateFiles(rootPath, "*.txt", SearchOption.AllDirectories);
+            Parallel.ForEach(allTxtFiles, (file) =>
+            {
+                if (file.Contains(query) || File.ReadAllText(file).Contains(query))
+                {
+                    foundFiles.Add(file);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            // Log the exception using Logger from Utilities
+            // Logger.Log(ex.Message);
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+
+        return foundFiles;
+    }
 }
