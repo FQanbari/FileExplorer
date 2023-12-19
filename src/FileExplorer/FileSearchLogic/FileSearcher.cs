@@ -27,13 +27,13 @@ public class FileSearcher
         return foundFiles;
     }
 
-    public ConcurrentBag<string> SearchFiles(string rootPath, string query)
+    public ConcurrentBag<string> SearchFiles(string rootPath, string query,string fileextension)
     {
         var foundFiles = new ConcurrentBag<string>();
 
         try
         {
-            var allTxtFiles = Directory.EnumerateFiles(rootPath, "*.txt", SearchOption.AllDirectories);
+            var allTxtFiles = Directory.EnumerateFiles(rootPath, $"*{fileextension}", SearchOption.AllDirectories);
             Parallel.ForEach(allTxtFiles, (file) =>
             {
                 if (file.Contains(query) || File.ReadAllText(file).Contains(query))
