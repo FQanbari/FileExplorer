@@ -1,19 +1,20 @@
-﻿using FileExplorer.PluginInterface;
+﻿using FileExplorer.FileSearch;
+using FileExplorer.PluginInterface;
 using System.Reflection;
 
 namespace FileExplorer.PluginManagement;
 
 public class PluginManager
 {
-    private List<IFileTypePlugin> plugins;
+    private List<IFileTypePlugin> _plugins;
     private int _pluginsUnloaded;
 
     public PluginManager()
     {
-        plugins = new List<IFileTypePlugin>();
+        _plugins = new List<IFileTypePlugin>();
     }
 
-    public List<IFileTypePlugin> LoadPlugins(string pluginDirectory)
+    public void LoadPlugins(string pluginDirectory)
     {
         List<IFileTypePlugin> loadedPlugins = new List<IFileTypePlugin>();
 
@@ -44,8 +45,6 @@ public class PluginManager
         {
             _pluginsUnloaded++;
         }
-
-        return loadedPlugins;
     }
 
     public void Warning()
@@ -53,23 +52,12 @@ public class PluginManager
         if (_pluginsUnloaded > 0)
             Console.WriteLine($"NOTE: There was a proble with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n");
     }
-}
-
-public class PluginFactory
-{
-    private readonly List<IFileTypePlugin> plugins;
-
-    public PluginFactory(List<IFileTypePlugin> plugins)
+    public List<string> GetPluginNames()
     {
-        this.plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
+        return _plugins.Select(x => x.TypeName).ToList();
     }
-
-    public List<string> ExecutePlugins(string rootDirectory, string searchQuery)
+    public List<IFileTypePlugin> GetPluginsByExtensionsInput(List<string> fileExtensions)
     {
-        var result = new List<string>();
-        foreach (var plugin in plugins)
-            result.AddRange(plugin.Execute(rootDirectory, searchQuery));
-
-        return result;
+        return _plugins.Where(plugin => fileExtensions.Any(extension => plugin.TypeName.ToLower().Contains(extension.ToLower()))).ToList();
     }
 }

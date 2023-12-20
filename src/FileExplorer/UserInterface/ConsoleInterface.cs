@@ -26,11 +26,12 @@ public class ConsoleInterface
     }
 
     
-    public string GetFileExtension(List<string> extensions)
+    public List<string> GetFileExtension(List<string> extensions)
     {
         Console.Write("Select one of these file types: ");
         Console.Write($"{string.Join(" ", extensions.Select((ext, index) => $"[{index + 1}]{ext}"))}: ");
-        return Console.ReadLine();
+        var input = Console.ReadLine();
+        return input.Split(",").ToList();
     }
 
     public string GetRootDirectory()

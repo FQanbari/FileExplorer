@@ -15,7 +15,6 @@ public class App
     private readonly FileSearcher fileSearcher;
     private readonly ConsoleInterface consoleInterface;
     private readonly PluginManager pluginManager;
-    private List<IFileTypePlugin> _plugins;
     private string _pluginPath = "";
 
 
@@ -26,9 +25,8 @@ public class App
         consoleInterface = new ConsoleInterface();
         pluginManager = new PluginManager();
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        _plugins = new List<IFileTypePlugin>();
         string projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
-        _pluginPath = Path.Combine(baseDirectory, "plugins");
+        _pluginPath = Path.Combine(baseDirectory, "_plugins");
     }
 
     public void Run()
@@ -38,7 +36,7 @@ public class App
         while (isRunning)
         {
             consoleInterface.DisplayMainMenu();
-            _plugins = pluginManager.LoadPlugins(_pluginPath);
+            pluginManager.LoadPlugins(_pluginPath);
             pluginManager.Warning();
             int choice = consoleInterface.Option();
 
@@ -64,14 +62,14 @@ public class App
 
     private void SearchByExtension()
     {
-        string fileExtension = consoleInterface.GetFileExtension(_plugins.Select(x => x.TypeName).ToList());
+        List<string> fileExtensions = consoleInterface.GetFileExtension(pluginManager.GetPluginNames());
 
         string rootDirectory = consoleInterface.GetRootDirectory();
 
         string query = consoleInterface.GetQuery();
 
-        var foundFiles = fileSearcher.SearchFiles(rootDirectory, _plugins, query);
+        var foundFiles = fileSearcher.SearchFiles(rootDirectory, pluginManager.GetPluginsByExtensionsInput(fileExtensions), query);
 
         consoleInterface.DisplaySearchResults(foundFiles.ToList());
-    }
+    }     
 }
