@@ -1,4 +1,6 @@
-﻿Console.WriteLine("=== BOOTCAMP SEARCH :: An extendible command-line search tool ===\n");
+﻿using FileExplorer.MainApp;
+
+Console.WriteLine("=== BOOTCAMP SEARCH :: An extendible command-line search tool ===\n");
 
 
 var app = new App();

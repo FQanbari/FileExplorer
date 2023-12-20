@@ -2,13 +2,13 @@
 
 public interface IPlugin
 {
-    // A unique identifier for the plugin
+    // A unique identifier for the pluginManager
     string Id { get; }
 
-    // A descriptive name for the plugin
+    // A descriptive name for the pluginManager
     string Name { get; }
 
-    // Initializes the plugin with necessary startup logic
+    // Initializes the pluginManager with necessary startup logic
     void Initialize();
 
     // Performs any cleanup or finalization necessary

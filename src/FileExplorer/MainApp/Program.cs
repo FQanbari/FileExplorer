@@ -22,7 +22,7 @@
 //        // Step 2: Create an instance of PluginLoader.
 //        var pluginLoader = new PluginLoader();
 
-//        // Step 3: Load the plugin DLL (provide the full path to the DLL).
+//        // Step 3: Load the pluginManager DLL (provide the full path to the DLL).
 //        string pluginPath = @"plugins\txtfilehandler.dll"; // Adjust the path as needed.
 //        IFileTypeHandler txtFileHandler = pluginLoader.LoadPlugin(pluginPath);
 

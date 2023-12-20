@@ -19,7 +19,7 @@ public class PluginManager
             throw new DirectoryNotFoundException("Plugins directory not found.");
         }
 
-        // Load plugin assemblies
+        // Load pluginManager assemblies
         var pluginFiles = Directory.GetFiles(pluginsDirectory, "*.dll");
         foreach (var file in pluginFiles)
         {
@@ -30,7 +30,7 @@ public class PluginManager
             }
             catch (Exception ex)
             {
-                // Handle exceptions related to plugin loading
+                // Handle exceptions related to pluginManager loading
             }
         }
     }

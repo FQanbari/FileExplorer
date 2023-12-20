@@ -1,16 +1,22 @@
 ﻿
 
-using FileExplorer.FileSearchLogic;
+using FileExplorer.FileSearch;
+using FileExplorer.SearchManagement;
 using FileExplorer.PluginInterface;
 using FileExplorer.PluginManagement;
 using FileExplorer.UserInterface;
-using System.Reflection;
+using Microsoft.VisualBasic.FileIO;
+using FileSearcher = FileExplorer.SearchManagement.FileSearcher;
+using PluginManager = FileExplorer.PluginManagement.PluginManager;
 
+namespace FileExplorer.MainApp;
 public class App
 {
     private readonly FileSearcher fileSearcher;
     private readonly ConsoleInterface consoleInterface;
-    private readonly PluginLoader plugin;
+    //private readonly PluginLoader pluginManager;
+    private readonly PluginManager pluginManager;
+    private List<IFileTypePlugin> _plugins;
     private string _pluginPath = "";
 
 
@@ -19,8 +25,9 @@ public class App
     {
         fileSearcher = new FileSearcher();
         consoleInterface = new ConsoleInterface();
-        plugin = new PluginLoader();
+        pluginManager = new PluginManager();
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        _plugins = new List<IFileTypePlugin>();
         string projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
         _pluginPath = Path.Combine(baseDirectory, "plugins");
     }
@@ -33,8 +40,8 @@ public class App
         {
             // Display the main menu and get user input.
             consoleInterface.DisplayMainMenu();
-            plugin.LoadPlugin(_pluginPath);
-            plugin.Waringn();
+            _plugins = pluginManager.LoadPlugins(_pluginPath);
+            pluginManager.Warning();
             int choice = consoleInterface.Option();
 
             switch (choice)
@@ -60,13 +67,14 @@ public class App
 
     private void SearchByExtension()
     {
-        // Get user input for file extension and root directory.
-        string fileExtension = consoleInterface.GetFileExtension(plugin.Extensionenstions());
+        // Get user input for file extension and root directory.      
+
+        string fileExtension = consoleInterface.GetFileExtension(_plugins.Select(x => x.TypeName).ToList());
         string rootDirectory = consoleInterface.GetRootDirectory();
         string query = consoleInterface.GetQuery();
 
         // Perform file search and display results.
-        var foundFiles = fileSearcher.SearchFiles(rootDirectory, fileExtension);
+        var foundFiles = fileSearcher.SearchFiles(rootDirectory, _plugins, query);
         consoleInterface.DisplaySearchResults(foundFiles.ToList());
     }
 }
