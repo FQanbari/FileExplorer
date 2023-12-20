@@ -29,9 +29,7 @@ public class ConsoleInterface
     public string GetFileExtension(List<string> extensions)
     {
         Console.Write("Select one of these file types: ");
-        for (int i = 0; i < extensions.Count; i++)
-            Console.Write($"[{i + 1}]{extensions[i]} ");
-        Console.Write(": ");
+        Console.Write($"{string.Join(" ", extensions.Select((ext, index) => $"[{index + 1}]{ext}"))}: ");
         return Console.ReadLine();
     }
 

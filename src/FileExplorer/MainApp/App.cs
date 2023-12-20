@@ -14,7 +14,6 @@ public class App
 {
     private readonly FileSearcher fileSearcher;
     private readonly ConsoleInterface consoleInterface;
-    //private readonly PluginLoader pluginManager;
     private readonly PluginManager pluginManager;
     private List<IFileTypePlugin> _plugins;
     private string _pluginPath = "";
@@ -38,7 +37,6 @@ public class App
 
         while (isRunning)
         {
-            // Display the main menu and get user input.
             consoleInterface.DisplayMainMenu();
             _plugins = pluginManager.LoadPlugins(_pluginPath);
             pluginManager.Warning();
@@ -47,7 +45,6 @@ public class App
             switch (choice)
             {
                 case 1:
-                    // Search for files by extension.
                     SearchByExtension();
                     break;
                 case 2:
@@ -67,14 +64,14 @@ public class App
 
     private void SearchByExtension()
     {
-        // Get user input for file extension and root directory.      
-
         string fileExtension = consoleInterface.GetFileExtension(_plugins.Select(x => x.TypeName).ToList());
+
         string rootDirectory = consoleInterface.GetRootDirectory();
+
         string query = consoleInterface.GetQuery();
 
-        // Perform file search and display results.
         var foundFiles = fileSearcher.SearchFiles(rootDirectory, _plugins, query);
+
         consoleInterface.DisplaySearchResults(foundFiles.ToList());
     }
 }
