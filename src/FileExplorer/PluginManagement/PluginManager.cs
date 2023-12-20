@@ -1,5 +1,6 @@
 ﻿using FileExplorer.FileSearch;
 using FileExplorer.PluginInterface;
+using Microsoft.VisualBasic.FileIO;
 using System.Reflection;
 
 namespace FileExplorer.PluginManagement;
@@ -16,8 +17,6 @@ public class PluginManager
 
     public void LoadPlugins(string pluginDirectory)
     {
-        List<IFileTypePlugin> loadedPlugins = new List<IFileTypePlugin>();
-
         try
         {
             if (Directory.Exists(pluginDirectory))
@@ -35,8 +34,9 @@ public class PluginManager
                     {
                         IFileTypePlugin plugin = Activator.CreateInstance(pluginType) as IFileTypePlugin;
 
-                        if (plugin != null)
-                            loadedPlugins.Add(plugin);
+                        if (plugin != null && plugin.CanHandleFileExtension(plugin.TypeName))
+                            _plugins.Add(plugin);
+
                     }
                 }
             }
@@ -46,7 +46,7 @@ public class PluginManager
             _pluginsUnloaded++;
         }
     }
-
+    
     public void Warning()
     {
         if (_pluginsUnloaded > 0)
@@ -58,6 +58,6 @@ public class PluginManager
     }
     public List<IFileTypePlugin> GetPluginsByExtensionsInput(List<string> fileExtensions)
     {
-        return _plugins.Where(plugin => fileExtensions.Any(extension => plugin.TypeName.ToLower().Contains(extension.ToLower()))).ToList();
+        return _plugins.Where(plugin => fileExtensions.Any(extension => plugin.TypeName.Contains(extension, StringComparison.OrdinalIgnoreCase))).ToList();
     }
 }

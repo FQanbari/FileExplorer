@@ -26,7 +26,7 @@ public class App
         pluginManager = new PluginManager();
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
         string projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
-        _pluginPath = Path.Combine(baseDirectory, "_plugins");
+        _pluginPath = Path.Combine(baseDirectory, "plugins");
     }
 
     public void Run()
