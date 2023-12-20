@@ -29,7 +29,7 @@ static void SearchFiles_(string rootDirectory, string searchQuery)
             // Determine the number of folders in the root directory
             int numberOfFolders = Directory.GetDirectories(rootDirectory, "*", SearchOption.AllDirectories).Length;
 
-            if (2 > 10)
+            if (numberOfFolders > 10)
             {
                 // If there are more than 10 folders, use parallel processing with Tasks
                 SearchFilesParallel_(rootDirectory, searchQuery);
