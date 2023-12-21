@@ -1,6 +1,4 @@
-﻿using FileExplorer.FileSearch;
-using FileExplorer.PluginInterface;
-using Microsoft.VisualBasic.FileIO;
+﻿using FileExplorer.PluginInterface;
 using System.Reflection;
 
 namespace FileExplorer.PluginManagement;

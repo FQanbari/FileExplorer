@@ -1,17 +1,13 @@
-﻿
-
-using FileExplorer.FileSearch;
-using FileExplorer.SearchManagement;
-using FileExplorer.PluginInterface;
+﻿using FileExplorer.SearchManagement;
 using FileExplorer.PluginManagement;
 using FileExplorer.UserInterface;
-using Microsoft.VisualBasic.FileIO;
-using FileSearcher = FileExplorer.SearchManagement.FileSearcher;
-using PluginManager = FileExplorer.PluginManagement.PluginManager;
+using FileExplorer.EventManagement;
 
 namespace FileExplorer.MainApp;
 public class App
 {
+    private readonly IHistoryObservable _historyObservable;
+    private readonly IHistoryObserver _historyObserver;
     private readonly FileSearcher fileSearcher;
     private readonly ConsoleInterface consoleInterface;
     private readonly PluginManager pluginManager;
@@ -21,12 +17,13 @@ public class App
 
     public App()
     {
-        fileSearcher = new FileSearcher();
         consoleInterface = new ConsoleInterface();
+        fileSearcher = new FileSearcher();
         pluginManager = new PluginManager();
-        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        string projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
-        _pluginPath = Path.Combine(baseDirectory, "plugins");
+        _pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins");
+        _historyObservable = new HistoryObservable();
+        _historyObserver = new HistoryManager();
+        ((HistoryManager)_historyObserver).SubscribeToSearchObservable((IHistoryObservable)_historyObservable);        
     }
 
     public void Run()
@@ -45,9 +42,12 @@ public class App
                 case 1:
                     SearchByExtension();
                     break;
-                case 2:
+                case 3:
                     // Add more menu options and corresponding actions here.
                     // Example: Search by file name, display search history, etc.
+                    _historyObservable.PerformSearch("C# Events");
+                    _historyObservable.PerformSearch("Observer Pattern");
+                    ((HistoryManager)_historyObserver).DisplaySearchHistory();
                     break;
                 case 4:
                     // Exit the application.

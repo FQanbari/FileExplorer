@@ -3,11 +3,11 @@
 Console.WriteLine("=== BOOTCAMP SEARCH :: An extendible command-line search tool ===\n");
 
 
-//var app = new App();
-//app.Run();
+var app = new App();
+app.Run();
 
-//Console.WriteLine("Press any key to exit...");
-//Console.ReadKey();
+Console.WriteLine("Press any key to exit...");
+Console.ReadKey();
 // Get the root directory from the user
 Console.Write("Enter the root directory path: ");
 string rootDirectory = Console.ReadLine();
