@@ -1,53 +1,54 @@
 ﻿using FileExplorer.SearchManagement;
 using FileExplorer.PluginManagement;
 using FileExplorer.UserInterface;
-using FileExplorer.EventManagement;
+using FileExplorer.HistoryManagement;
+using System.IO;
 
 namespace FileExplorer.MainApp;
 public class App
 {
-    private readonly IHistoryObservable _historyObservable;
-    private readonly IHistoryObserver _historyObserver;
+    
     private readonly FileSearcher fileSearcher;
     private readonly ConsoleInterface consoleInterface;
     private readonly PluginManager pluginManager;
+    private readonly HistoryManager historyManagemer;
     private string _pluginPath = "";
-
-
+    private readonly IObserver _searchHistoryObserver;
 
     public App()
     {
         consoleInterface = new ConsoleInterface();
         fileSearcher = new FileSearcher();
         pluginManager = new PluginManager();
+        historyManagemer = new HistoryManager("d:\\logs.json");
         _pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins");
-        _historyObservable = new HistoryObservable();
-        _historyObserver = new HistoryManager();
-        ((HistoryManager)_historyObserver).SubscribeToSearchObservable((IHistoryObservable)_historyObservable);        
+        _searchHistoryObserver = new SearchHistoryObserver("d:\\logs.json");
+        consoleInterface.EventOccurred += _searchHistoryObserver.Update;
     }
 
     public void Run()
-    {
+    {        
         bool isRunning = true;
-
+        pluginManager.LoadPlugins(_pluginPath);
         while (isRunning)
         {
+            consoleInterface.Clear();
             consoleInterface.DisplayMainMenu();
-            pluginManager.LoadPlugins(_pluginPath);
-            pluginManager.Warning();
+            
+            consoleInterface.Warning(pluginManager.GetWarning());
             int choice = consoleInterface.Option();
-
             switch (choice)
             {
                 case 1:
                     SearchByExtension();
+                    consoleInterface.Stop();
                     break;
                 case 3:
                     // Add more menu options and corresponding actions here.
                     // Example: Search by file name, display search history, etc.
-                    _historyObservable.PerformSearch("C# Events");
-                    _historyObservable.PerformSearch("Observer Pattern");
-                    ((HistoryManager)_historyObserver).DisplaySearchHistory();
+                    consoleInterface.DisplayHistoryResults(historyManagemer.LoadSearchHistory());
+                    consoleInterface.Stop();
+
                     break;
                 case 4:
                     // Exit the application.
@@ -63,9 +64,7 @@ public class App
     private void SearchByExtension()
     {
         List<string> fileExtensions = consoleInterface.GetFileExtension(pluginManager.GetPluginNames());
-
         string rootDirectory = consoleInterface.GetRootDirectory();
-
         string query = consoleInterface.GetQuery();
 
         var foundFiles = fileSearcher.SearchFiles(rootDirectory, pluginManager.GetPluginsByExtensionsInput(fileExtensions), query);

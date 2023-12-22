@@ -1,75 +1,124 @@
-﻿namespace FileExplorer.EventManagement;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
-public class EventManager
+// Command interface
+public interface ICommand
 {
+    void Execute();
 }
 
-
-// Subject interface
-public interface IHistoryObservable
+// Concrete command for saving search history to a file
+public class SaveSearchHistoryCommand : ICommand
 {
-    event EventHandler<HistoryEventArgs> HistoryPerformed;
-    void PerformSearch(string searchQuery);
-}
+    private string _data;
+    private string filePath;
 
-// Concrete subject
-public class HistoryObservable : IHistoryObservable
-{
-    public event EventHandler<HistoryEventArgs> HistoryPerformed;
-
-    public void PerformSearch(string searchQuery)
+    public SaveSearchHistoryCommand(string data, string filePath)
     {
-        // Perform the search operation...
-
-        // Notify subscribers that a search has been performed
-        OnSearchPerformed(searchQuery);
+        this._data = data;
+        this.filePath = filePath;
     }
 
-    protected virtual void OnSearchPerformed(string searchQuery)
+    public void Execute()
     {
-        HistoryPerformed?.Invoke(this, new HistoryEventArgs(searchQuery));
-    }
-}
-
-// Observer interface
-public interface IHistoryObserver
-{
-    void Update(object sender, HistoryEventArgs e);
-}
-
-// Concrete observer
-public class HistoryManager : IHistoryObserver
-{
-    private List<string> searchHistory = new List<string>();
-
-    public void SubscribeToSearchObservable(IHistoryObservable searchObservable)
-    {
-        searchObservable.HistoryPerformed += Update;
-    }
-
-    public void Update(object sender, HistoryEventArgs e)
-    {
-        // Save the search history
-        searchHistory.Add(e.SearchQuery);
-        Console.WriteLine($"Search performed: {e.SearchQuery}");
-    }
-
-    public void DisplaySearchHistory()
-    {
-        Console.WriteLine("Search History:");
-        foreach (var query in searchHistory)
+        try
         {
-            Console.WriteLine(query);
+            if (!File.Exists(filePath))
+                File.Create(filePath);
+            // Save the search history to a file
+            File.AppendAllText(filePath, $"{_data}\n");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving search history: {ex.Message}");
         }
     }
 }
 
-public class HistoryEventArgs : EventArgs
+// Observer interface
+public interface IObserver
+{
+    void Update(object sender, EventArgs e);
+}
+
+// Concrete observer for saving search history
+public class SearchHistoryObserver : IObserver
+{
+    private string filePath;
+
+    public SearchHistoryObserver(string filePath)
+    {
+        this.filePath = filePath;
+    }
+
+    public void Update(object sender, EventArgs e)
+    {
+        if (e is SearchEventArgs searchEventArgs)
+        {
+            // Create a command to save search history
+            ICommand saveHistoryCommand = new SaveSearchHistoryCommand(searchEventArgs.SearchQuery, filePath);
+
+            // Execute the command
+            
+            saveHistoryCommand.Execute();
+        }
+    }
+}
+
+// Subject interface
+public interface ISubject
+{
+    event EventHandler<EventArgs> EventOccurred;
+    //void TriggerEvent();
+}
+
+//// Concrete subject for loading plugins
+//public class PluginLoader : ISubject
+//{
+//    public event EventHandler<EventArgs> EventOccurred;
+
+//    public void TriggerEvent()
+//    {
+//        try
+//        {
+//            // Simulate loading plugins
+//            // ...
+
+//            // Notify observers that plugin loading was successful
+//            OnEventOccurred(EventArgs.Empty);
+//        }
+//        catch (Exception ex)
+//        {
+//            // Notify observers about the error
+//            OnEventOccurred(new ErrorEventArgs(ex.Message));
+//        }
+//    }
+
+//    protected virtual void OnEventOccurred(EventArgs e)
+//    {
+//        EventOccurred?.Invoke(this, e);
+//    }
+//}
+
+// Custom EventArgs for errors
+public class ErrorEventArgs : EventArgs
+{
+    public string ErrorMessage { get; }
+
+    public ErrorEventArgs(string errorMessage)
+    {
+        ErrorMessage = errorMessage;
+    }
+}
+public class SearchEventArgs : EventArgs
 {
     public string SearchQuery { get; }
 
-    public HistoryEventArgs(string searchQuery)
+    public SearchEventArgs(string searchQuery)
     {
         SearchQuery = searchQuery;
     }
 }
+
+

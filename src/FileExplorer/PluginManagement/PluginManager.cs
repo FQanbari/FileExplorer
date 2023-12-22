@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace FileExplorer.PluginManagement;
 
-public class PluginManager
+public class PluginManager 
 {
     private List<IFileTypePlugin> _plugins;
     private int _pluginsUnloaded;
@@ -34,21 +34,27 @@ public class PluginManager
 
                         if (plugin != null && plugin.CanHandleFileExtension(plugin.TypeName))
                             _plugins.Add(plugin);
+                        else
+                            _pluginsUnloaded++;
 
                     }
                 }
+                _pluginsUnloaded = pluginFiles.Length - _plugins.Count;
             }
         }
         catch (Exception ex)
         {
             _pluginsUnloaded++;
         }
+        
     }
     
-    public void Warning()
+    public string GetWarning()
     {
-        if (_pluginsUnloaded > 0)
-            Console.WriteLine($"NOTE: There was a proble with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n");
+        return _pluginsUnloaded > 0 ?
+        ($"NOTE: There was a proble with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n")
+        : "";
+
     }
     public List<string> GetPluginNames()
     {
