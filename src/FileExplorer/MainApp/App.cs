@@ -20,9 +20,9 @@ public class App
         consoleInterface = new ConsoleInterface();
         fileSearcher = new FileSearcher();
         pluginManager = new PluginManager();
-        historyManagemer = new HistoryManager("d:\\logs.json");
+        historyManagemer = new HistoryManager(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs.json"));
         _pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins");
-        _searchHistoryObserver = new SearchHistoryObserver("d:\\logs.json");
+        _searchHistoryObserver = new SearchHistoryObserver(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs.json"));
         consoleInterface.EventOccurred += _searchHistoryObserver.Update;
     }
 

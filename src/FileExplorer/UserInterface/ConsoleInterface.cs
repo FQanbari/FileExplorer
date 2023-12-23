@@ -1,5 +1,6 @@
 ﻿
 
+using FileExplorer.HistoryManagement;
 using System.Linq;
 
 namespace FileExplorer.UserInterface;
@@ -22,7 +23,7 @@ public class ConsoleInterface : ISubject
 
         if (int.TryParse(Console.ReadLine(), out int choice))
         {
-            OnEventOccurred(new SearchEventArgs($"Choice: {choice}"));
+            OnEventOccurred(new SearchEventArgs(new List<string> { $"Choice: {choice}" }));
             return choice;
         }
         else
@@ -37,14 +38,14 @@ public class ConsoleInterface : ISubject
     {
         var extenstionsStr = extensions.Select((ext, index) => $"[{index + 1}]{ext}");
         Console.Write("Select one of these file types: ");
-        Console.Write($"{string.Join(" ",extenstionsStr)}");
+        Console.Write($"{string.Join(" ",extenstionsStr)}: ");
         var input = Console.ReadLine();
         var result = input.Split(",").ToList()
             .Select(indexStr => int.Parse(indexStr) - 1) // Convert to zero-based index
             .Where(index => index >= 0 && index < extensions.Count) // Check bounds
             .Select(index => extensions[index])
             .ToList();
-        OnEventOccurred(new SearchEventArgs($"Extensitons: {string.Join(",", result)}"));
+        OnEventOccurred(new SearchEventArgs(result));
         return result;
     }
 
@@ -64,7 +65,7 @@ public class ConsoleInterface : ISubject
         {
             Console.WriteLine(filePath);
         }
-        OnEventOccurred(new SearchEventArgs($"Search Result: {string.Join(",",foundFiles)}"));
+        OnEventOccurred(new SearchEventArgs(foundFiles));
     }
 
     public void DisplayErrorMessage(string message)
@@ -76,7 +77,7 @@ public class ConsoleInterface : ISubject
     {
         Console.Write("Query: ");
         var input = Console.ReadLine();
-        OnEventOccurred(new SearchEventArgs($"Query: {input}"));
+        OnEventOccurred(new SearchEventArgs(new List<string> { input}));
         return input;
     }
 
@@ -85,16 +86,15 @@ public class ConsoleInterface : ISubject
         if (!string.IsNullOrWhiteSpace(warning))
             Console.WriteLine(warning);
     }
-    public void DisplayHistoryResults(List<string> result)
+    public void DisplayHistoryResults(List<SearchHistoryEntry> result)
     {
         Console.WriteLine("History Results:");
         if (!result.Any())
             Console.WriteLine("Not Find ..");
-        foreach (string filePath in result)
+        foreach (var history in result)
         {
-            Console.WriteLine(filePath);
+            Console.WriteLine($"{history.Timestamp}: {history.Query}");
         }
-        OnEventOccurred(new SearchEventArgs($"History Result: {string.Join(",", result)}"));
     }
     public void Stop()
     {

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using FileExplorer.HistoryManagement;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 
 // Command interface
 public interface ICommand
@@ -11,10 +14,10 @@ public interface ICommand
 // Concrete command for saving search history to a file
 public class SaveSearchHistoryCommand : ICommand
 {
-    private string _data;
+    private List<string> _data;
     private string filePath;
 
-    public SaveSearchHistoryCommand(string data, string filePath)
+    public SaveSearchHistoryCommand(List<string> data, string filePath)
     {
         this._data = data;
         this.filePath = filePath;
@@ -24,10 +27,22 @@ public class SaveSearchHistoryCommand : ICommand
     {
         try
         {
-            if (!File.Exists(filePath))
-                File.Create(filePath);
-            // Save the search history to a file
-            File.AppendAllText(filePath, $"{_data}\n");
+            List<SearchHistoryEntry> history;
+
+            if (File.Exists(filePath))
+            {
+                string existingJson = File.ReadAllText(filePath);
+                history = JsonConvert.DeserializeObject<List<SearchHistoryEntry>>(existingJson) ?? new List<SearchHistoryEntry>();
+            }
+            else
+            {
+                history = new List<SearchHistoryEntry>();
+            }
+
+            history.Add(new SearchHistoryEntry { Timestamp = DateTime.Now, Query = _data });
+
+            string updatedJson = JsonConvert.SerializeObject(history, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(filePath, updatedJson);
         }
         catch (Exception ex)
         {
@@ -113,9 +128,12 @@ public class ErrorEventArgs : EventArgs
 }
 public class SearchEventArgs : EventArgs
 {
-    public string SearchQuery { get; }
+    public List<string> SearchQuery { get; }
+    public string Path { get; }
+    public string Choice { get; }
+    public List<string> Extensions { get; }
 
-    public SearchEventArgs(string searchQuery)
+    public SearchEventArgs(List<string> searchQuery)
     {
         SearchQuery = searchQuery;
     }
