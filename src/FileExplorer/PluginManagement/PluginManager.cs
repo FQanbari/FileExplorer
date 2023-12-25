@@ -5,6 +5,8 @@ namespace FileExplorer.PluginManagement;
 
 public class PluginManager 
 {
+    public delegate void PluginLoadHandler(string pluginName, bool success);
+    public event PluginLoadHandler PluginLoaded;
     private List<IFileTypePlugin> _plugins;
     private int _pluginsUnloaded;
 
@@ -23,7 +25,10 @@ public class PluginManager
 
                 foreach (string pluginFile in pluginFiles)
                 {
-                    Assembly assembly = Assembly.LoadFrom(pluginFile);
+                    try
+                    {
+                        string pluginName = "";
+                        Assembly assembly = Assembly.LoadFrom(pluginFile);
 
                     var pluginTypes = assembly.GetTypes()
                         .Where(type => typeof(IFileTypePlugin).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
@@ -36,15 +41,23 @@ public class PluginManager
                             _plugins.Add(plugin);
                         else
                             _pluginsUnloaded++;
+                        pluginName = plugin.TypeName;
 
+                    }
+                        OnPluginLoaded(pluginName, true); // Assuming you extract pluginName somehow
+                    }
+                    catch (Exception ex)
+                    {
+                        OnPluginLoaded(pluginFile, false);
                     }
                 }
                 _pluginsUnloaded = pluginFiles.Length - _plugins.Count;
             }
+            
         }
         catch (Exception ex)
         {
-            _pluginsUnloaded++;
+           
         }
         
     }
@@ -63,5 +76,9 @@ public class PluginManager
     public List<IFileTypePlugin> GetPluginsByExtensionsInput(List<string> fileExtensions)
     {
         return _plugins.Where(plugin => fileExtensions.Any(extension => plugin.TypeName.Contains(extension, StringComparison.OrdinalIgnoreCase))).ToList();
+    }
+    private void OnPluginLoaded(string pluginName, bool success)
+    {
+        PluginLoaded?.Invoke(pluginName, success);
     }
 }

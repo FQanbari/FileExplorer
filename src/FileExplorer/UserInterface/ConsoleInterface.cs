@@ -1,13 +1,14 @@
 ﻿
 
 using FileExplorer.HistoryManagement;
+using FileExplorer.SearchManagement;
 using System.Linq;
 
 namespace FileExplorer.UserInterface;
 
-public class ConsoleInterface : ISubject
+public class ConsoleInterface 
 {
-    public event EventHandler<EventArgs> EventOccurred;
+    public event EventHandler HistoryViewed;
 
     public void DisplayMainMenu()
     {
@@ -23,7 +24,6 @@ public class ConsoleInterface : ISubject
 
         if (int.TryParse(Console.ReadLine(), out int choice))
         {
-            OnEventOccurred(new SearchEventArgs(new List<string> { $"Choice: {choice}" }));
             return choice;
         }
         else
@@ -45,7 +45,6 @@ public class ConsoleInterface : ISubject
             .Where(index => index >= 0 && index < extensions.Count) // Check bounds
             .Select(index => extensions[index])
             .ToList();
-        OnEventOccurred(new SearchEventArgs(result));
         return result;
     }
 
@@ -65,7 +64,6 @@ public class ConsoleInterface : ISubject
         {
             Console.WriteLine(filePath);
         }
-        OnEventOccurred(new SearchEventArgs(foundFiles));
     }
 
     public void DisplayErrorMessage(string message)
@@ -77,7 +75,6 @@ public class ConsoleInterface : ISubject
     {
         Console.Write("Query: ");
         var input = Console.ReadLine();
-        OnEventOccurred(new SearchEventArgs(new List<string> { input}));
         return input;
     }
 
@@ -86,16 +83,32 @@ public class ConsoleInterface : ISubject
         if (!string.IsNullOrWhiteSpace(warning))
             Console.WriteLine(warning);
     }
-    public void DisplayHistoryResults(List<SearchHistoryEntry> result)
+    public void DisplaySearchHistory(List<SearchHistoryEntry> historyEntries)
     {
-        Console.WriteLine("History Results:");
-        if (!result.Any())
-            Console.WriteLine("Not Find ..");
-        foreach (var history in result)
+        Console.WriteLine("Search History:");
+        if (historyEntries == null || historyEntries.Count == 0)
         {
-            Console.WriteLine($"{history.Timestamp}: {history.Query}");
+            Console.WriteLine("No search history available.");
+            return;
         }
+
+        foreach (var entry in historyEntries)
+        {
+            Console.WriteLine($"Timestamp: {entry.Timestamp}, Query: {entry.SearchQuery}");
+            Console.WriteLine("Results:");
+            foreach (var result in entry.SearchResults)
+            {
+                Console.WriteLine($"- {result}");
+            }
+            Console.WriteLine(); // Adds a blank line for better readability
+        }
+        OnHistoryViewed();
     }
+    public void DisplayMessage(string message)
+    {
+        Console.WriteLine(message);
+    }
+
     public void Stop()
     {
         Console.ReadKey();
@@ -104,8 +117,8 @@ public class ConsoleInterface : ISubject
     {
         Console.Clear();
     }
-    protected virtual void OnEventOccurred(EventArgs e)
+    protected virtual void OnHistoryViewed()
     {
-        EventOccurred?.Invoke(this, e);
+        HistoryViewed?.Invoke(this, EventArgs.Empty);
     }
 }

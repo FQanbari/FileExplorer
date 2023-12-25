@@ -1,4 +1,5 @@
 ﻿using FileExplorer.HistoryManagement;
+using FileExplorer.SearchManagement;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ public class SaveSearchHistoryCommand : ICommand
                 history = new List<SearchHistoryEntry>();
             }
 
-            history.Add(new SearchHistoryEntry { Timestamp = DateTime.Now, Query = _data });
+            history.Add(new SearchHistoryEntry { Timestamp = DateTime.Now, SearchResults = _data });
 
             string updatedJson = JsonConvert.SerializeObject(history, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(filePath, updatedJson);
@@ -133,8 +134,9 @@ public class SearchEventArgs : EventArgs
     public string Choice { get; }
     public List<string> Extensions { get; }
 
-    public SearchEventArgs(List<string> searchQuery)
+    public SearchEventArgs(List<string>? extensions = null,List<string>? searchQuery = null)
     {
+        Extensions = extensions;
         SearchQuery = searchQuery;
     }
 }

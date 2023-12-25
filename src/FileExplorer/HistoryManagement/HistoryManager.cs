@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FileExplorer.SearchManagement;
+using Newtonsoft.Json;
 
 namespace FileExplorer.HistoryManagement;
 
@@ -33,9 +34,4 @@ public class HistoryManager
 
         return new List<SearchHistoryEntry>();
     }
-}
-public class SearchHistoryEntry
-{
-    public DateTime Timestamp { get; set; }
-    public List<string> Query { get; set; }
 }

@@ -13,4 +13,8 @@ public static class Helpers
         string response = Console.ReadLine().ToLower();
         return response == "y" || response == "yes";
     }
+    public static void DisplayMessage(string message)
+    {
+        Console.WriteLine(message);
+    }
 }
