@@ -104,6 +104,25 @@ public class ConsoleInterface
         }
         OnHistoryViewed();
     }
+    public void DisplayPlugins(List<string> plugins)
+    {
+        Console.WriteLine("Loaded Plugins:");
+        foreach (var plugin in plugins)
+        {
+            Console.WriteLine($"- {plugin}");
+        }
+    }
+    public IFileTypePlugin ChoosePlugin(List<IFileTypePlugin> plugins)
+    {
+        Console.WriteLine("Multiple plugins can handle this file type. Please choose one:");
+        for (int i = 0; i < plugins.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {plugins[i].TypeName}");
+        }
+
+        int choice = Convert.ToInt32(Console.ReadLine()) - 1;
+        return plugins[choice];
+    }
     public void DisplayMessage(string message)
     {
         Console.WriteLine(message);

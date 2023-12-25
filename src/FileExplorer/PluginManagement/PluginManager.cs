@@ -69,6 +69,14 @@ public class PluginManager
         : "";
 
     }
+    public List<string> ListPlugins()
+    {
+        return _plugins.Select(plugin => plugin.TypeName).ToList();
+    }
+    public List<IFileTypePlugin> GetPluginsForExtension(string fileExtension)
+    {
+        return _plugins.Where(plugin => plugin.CanHandleFileExtension(fileExtension)).ToList();
+    }
     public List<string> GetPluginNames()
     {
         return _plugins.Select(x => x.TypeName).ToList();
