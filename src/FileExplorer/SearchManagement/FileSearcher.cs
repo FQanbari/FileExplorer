@@ -1,4 +1,4 @@
-﻿using FileExplorer.PluginInterface;
+﻿using FileExplorer.ExtensionPlatfrom;
 using FileExplorer.PluginManagement;
 using Newtonsoft.Json;
 
@@ -17,7 +17,7 @@ public class FileSearcher
         _historyFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "searchHistory.json");
         _searchHistory = LoadSearchHistory();
     }
-    public List<string> SearchFiles(string rootDirectory, List<IFileTypePlugin> plugins, string searchQuery)
+    public List<string> SearchFiles(string rootDirectory, List<IExtension> plugins, string searchQuery)
     {
         var result = new List<string>();
         try

@@ -1,7 +1,9 @@
 ﻿
 
+using FileExplorer.ExtensionPlatfrom;
 using FileExplorer.HistoryManagement;
 using FileExplorer.SearchManagement;
+using FileExplorer.Utilities;
 using System.Linq;
 
 namespace FileExplorer.UserInterface;
@@ -12,10 +14,12 @@ public class ConsoleInterface
 
     public void DisplayMainMenu()
     {
-        Console.WriteLine("1. Search for files");
-        Console.WriteLine("2. Manage Extensions");
-        Console.WriteLine("3. View search history\n");
-        Console.WriteLine("4. Exit\n");
+        Helpers.Enter();
+        Helpers.Info("1. Search for files");
+        Helpers.Info("2. Manage Extensions");
+        Helpers.Info("3. View search history\n");
+        Helpers.Error("4. Exit");
+        Helpers.Enter();
     }
 
     public int Option()
@@ -81,7 +85,7 @@ public class ConsoleInterface
     public void Warning(string warning)
     {
         if (!string.IsNullOrWhiteSpace(warning))
-            Console.WriteLine(warning);
+            Helpers.Warning(warning);
     }
     public void DisplaySearchHistory(List<SearchHistoryEntry> historyEntries)
     {
@@ -104,24 +108,34 @@ public class ConsoleInterface
         }
         OnHistoryViewed();
     }
-    public void DisplayPlugins(List<string> plugins)
+    public void DisplayPlugins(List<(IExtension Extension, string Name)> plugins)
     {
         Console.WriteLine("Loaded Plugins:");
-        foreach (var plugin in plugins)
+        var pluginsGroupedByType = plugins
+           .GroupBy(p => p.Extension.TypeName)
+           .OrderBy(g => g.Key);
+
+        foreach (var group in pluginsGroupedByType)
         {
-            Console.WriteLine($"- {plugin}");
+            Console.WriteLine($"{group.Key}:");
+            foreach (var plugin in group)
+            {
+                Console.WriteLine($"   - {plugin.Name}");
+            }
         }
     }
-    public IFileTypePlugin ChoosePlugin(List<IFileTypePlugin> plugins)
+    public IExtension ChoosePlugin(List<(IExtension extenstion, string name)> plugins)
     {
         Console.WriteLine("Multiple plugins can handle this file type. Please choose one:");
-        for (int i = 0; i < plugins.Count; i++)
+        int i = 0;
+        foreach (var plugin in plugins)
         {
-            Console.WriteLine($"{i + 1}. {plugins[i].TypeName}");
+            Console.WriteLine($"{i + 1}. {plugin.name}");
+            i++;
         }
 
         int choice = Convert.ToInt32(Console.ReadLine()) - 1;
-        return plugins[choice];
+        return plugins[choice].extenstion;
     }
     public void DisplayMessage(string message)
     {

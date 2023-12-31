@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileExplorer", "src\FileExp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TXTFileHandler", "plugins\TXTFileHandler\TXTFileHandler.csproj", "{9E268652-7728-41C0-A8C7-B8E6924DA658}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileExplorer.ExtensionPlatfrom", "src\FileExplorer.ExtensionPlatfrom\FileExplorer.ExtensionPlatfrom.csproj", "{CF8093FA-40F2-442F-8BF7-DDAA3A5BD1D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEXTFinderHandler", "plugins\TEXTFinderHandler\TEXTFinderHandler.csproj", "{C8B11FC1-98FA-4719-AC1D-DE16168F3523}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{9E268652-7728-41C0-A8C7-B8E6924DA658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E268652-7728-41C0-A8C7-B8E6924DA658}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E268652-7728-41C0-A8C7-B8E6924DA658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF8093FA-40F2-442F-8BF7-DDAA3A5BD1D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF8093FA-40F2-442F-8BF7-DDAA3A5BD1D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF8093FA-40F2-442F-8BF7-DDAA3A5BD1D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF8093FA-40F2-442F-8BF7-DDAA3A5BD1D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8B11FC1-98FA-4719-AC1D-DE16168F3523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8B11FC1-98FA-4719-AC1D-DE16168F3523}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8B11FC1-98FA-4719-AC1D-DE16168F3523}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8B11FC1-98FA-4719-AC1D-DE16168F3523}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
 
-namespace FileExplorer.PluginInterface;
+namespace FileExplorer.ExtensionPlatfrom;
 
-
-public interface IFileTypePlugin 
+public interface IExtension
 {
     public string TypeName { get; }
 
@@ -11,7 +10,7 @@ public interface IFileTypePlugin
 
     public bool CanHandleFileExtension(string fileExtension)
     {
-        var attribute = GetType().GetCustomAttribute<FileSearchPluginAttribute>();
+        var attribute = GetType().GetCustomAttribute<FileExplorerExtenstionAttribute>();
         return attribute != null && attribute.FileExtension.Equals(fileExtension, StringComparison.OrdinalIgnoreCase);
     }
 }

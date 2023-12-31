@@ -1,14 +1,13 @@
 ﻿using FileExplorer.SearchManagement;
 using FileExplorer.PluginManagement;
 using FileExplorer.UserInterface;
-using FileExplorer.HistoryManagement;
-using System.IO;
-using FileExplorer.PluginInterface;
+using FileExplorer.ExtensionPlatfrom;
+using FileExplorer.Utilities;
 
 namespace FileExplorer.MainApp;
 public class App
 {
-    
+
     private readonly FileSearcher fileSearcher;
     private readonly ConsoleInterface consoleInterface;
     private readonly PluginManager pluginManager;
@@ -28,14 +27,14 @@ public class App
     }
 
     public void Run()
-    {        
+    {
         bool isRunning = true;
         pluginManager.LoadPlugins(_pluginPath);
         while (isRunning)
         {
             //consoleInterface.Clear();
             consoleInterface.DisplayMainMenu();
-            
+
             consoleInterface.Warning(pluginManager.GetWarning());
             int choice = consoleInterface.Option();
             switch (choice)
@@ -58,27 +57,34 @@ public class App
                     consoleInterface.DisplayErrorMessage("Invalid choice. Please try again.\n\n\n");
                     break;
             }
+            Helpers.PrintDividerLine();
         }
     }
 
     private void SearchByExtension()
     {
-        List<string> fileExtensions = consoleInterface.GetFileExtension(pluginManager.GetPluginNames());
+        List<string> chosenTypes = consoleInterface.GetFileExtension(pluginManager.GetTypeAllPlugins());
+
+        List<IExtension> resultExtensions = new List<IExtension>();
+        foreach (var choosType in chosenTypes)
+        {
+            var compatiblePlugins = pluginManager.GetPluginsForExtension(choosType);
+            IExtension selectedPlugin;
+
+            if (compatiblePlugins.Count > 1)
+            {
+                selectedPlugin = consoleInterface.ChoosePlugin(compatiblePlugins);
+            }
+            else
+            {
+                selectedPlugin = compatiblePlugins.Select(x => x.Extension).FirstOrDefault();
+            }
+            resultExtensions.Add(selectedPlugin);
+        }
+
         string rootDirectory = consoleInterface.GetRootDirectory();
         string query = consoleInterface.GetQuery();
-        var compatiblePlugins = pluginManager.GetPluginsForExtension(fileExtension);
-        IFileTypePlugin selectedPlugin;
-
-        if (compatiblePlugins.Count > 1)
-        {
-            selectedPlugin = consoleInterface.ChoosePlugin(compatiblePlugins);
-        }
-        else
-        {
-            selectedPlugin = compatiblePlugins.FirstOrDefault();
-        }
-
-        var foundFiles = fileSearcher.SearchFiles(rootDirectory, pluginManager.GetPluginsByExtensionsInput(fileExtensions), query);
+        var foundFiles = fileSearcher.SearchFiles(rootDirectory, resultExtensions, query);
         fileSearcher.LogSearch(query, foundFiles.ToList());
 
         consoleInterface.DisplaySearchResults(foundFiles.ToList());

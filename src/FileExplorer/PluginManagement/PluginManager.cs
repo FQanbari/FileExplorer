@@ -1,18 +1,18 @@
-﻿using FileExplorer.PluginInterface;
+﻿using FileExplorer.ExtensionPlatfrom;
 using System.Reflection;
 
 namespace FileExplorer.PluginManagement;
 
-public class PluginManager 
+public class PluginManager
 {
     public delegate void PluginLoadHandler(string pluginName, bool success);
     public event PluginLoadHandler PluginLoaded;
-    private List<IFileTypePlugin> _plugins;
+    private List<(IExtension extension, string name)> _plugins = new List<(IExtension, string)>();
     private int _pluginsUnloaded;
 
     public PluginManager()
     {
-        _plugins = new List<IFileTypePlugin>();
+        _plugins = new List<(IExtension, string)>();
     }
 
     public void LoadPlugins(string pluginDirectory)
@@ -30,20 +30,21 @@ public class PluginManager
                         string pluginName = "";
                         Assembly assembly = Assembly.LoadFrom(pluginFile);
 
-                    var pluginTypes = assembly.GetTypes()
-                        .Where(type => typeof(IFileTypePlugin).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
+                        var pluginTypes = assembly.GetTypes()
+                            .Where(type => typeof(IExtension).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
 
-                    foreach (var pluginType in pluginTypes)
-                    {
-                        IFileTypePlugin plugin = Activator.CreateInstance(pluginType) as IFileTypePlugin;
+                        foreach (var pluginType in pluginTypes)
+                        {
+                            pluginName = pluginType.FullName;
+                            IExtension plugin = Activator.CreateInstance(pluginType) as IExtension;
 
-                        if (plugin != null && plugin.CanHandleFileExtension(plugin.TypeName))
-                            _plugins.Add(plugin);
-                        else
-                            _pluginsUnloaded++;
-                        pluginName = plugin.TypeName;
+                            if (plugin != null && plugin.CanHandleFileExtension(plugin.TypeName))
+                                _plugins.Add((plugin, pluginName));
+                            else
+                                _pluginsUnloaded++;
 
-                    }
+
+                        }
                         OnPluginLoaded(pluginName, true); // Assuming you extract pluginName somehow
                     }
                     catch (Exception ex)
@@ -53,37 +54,38 @@ public class PluginManager
                 }
                 _pluginsUnloaded = pluginFiles.Length - _plugins.Count;
             }
-            
+
         }
         catch (Exception ex)
         {
-           
+
         }
-        
+
     }
-    
+
     public string GetWarning()
     {
         return _pluginsUnloaded > 0 ?
-        ($"NOTE: There was a proble with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n")
+        ($"NOTE: There was a problem with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n")
         : "";
 
     }
-    public List<string> ListPlugins()
+    public List<(IExtension Extension, string Name)> ListPlugins()
     {
-        return _plugins.Select(plugin => plugin.TypeName).ToList();
+        return _plugins;
     }
-    public List<IFileTypePlugin> GetPluginsForExtension(string fileExtension)
+    public List<(IExtension Extension, string Name)> GetPluginsForExtension(string fileExtension)
     {
-        return _plugins.Where(plugin => plugin.CanHandleFileExtension(fileExtension)).ToList();
+        return  _plugins.Where(plugin => plugin.extension.CanHandleFileExtension(fileExtension)).ToList();
     }
-    public List<string> GetPluginNames()
+    public List<string> GetTypeAllPlugins()
     {
-        return _plugins.Select(x => x.TypeName).ToList();
+        return _plugins.GroupBy(x => x.extension.TypeName).Select(x => x.Key).ToList();
     }
-    public List<IFileTypePlugin> GetPluginsByExtensionsInput(List<string> fileExtensions)
+    public List<IExtension> GetPluginsByExtensionsInput(List<string> fileExtensions)
     {
-        return _plugins.Where(plugin => fileExtensions.Any(extension => plugin.TypeName.Contains(extension, StringComparison.OrdinalIgnoreCase))).ToList();
+        return _plugins.Where(plugin => fileExtensions
+        .Any(extension => plugin.extension.TypeName.Contains(extension, StringComparison.OrdinalIgnoreCase))).Select(plugin => plugin.extension).ToList();
     }
     private void OnPluginLoaded(string pluginName, bool success)
     {

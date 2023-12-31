@@ -1,12 +1,12 @@
-﻿using FileExplorer.PluginInterface;
+﻿using FileExplorer.ExtensionPlatfrom;
 
 namespace FileExplorer.PluginManagement;
 
 public class PluginFactory
 {
-    private readonly List<IFileTypePlugin> plugins;
+    private readonly List<IExtension> plugins;
 
-    public PluginFactory(List<IFileTypePlugin> plugins)
+    public PluginFactory(List<IExtension> plugins)
     {
         this.plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
     }
