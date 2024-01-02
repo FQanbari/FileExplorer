@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace FileExplorer.UserInterface;
 
-public class ConsoleInterface 
+public class ConsoleInterface : IConsoleInterface
 {
     public event EventHandler HistoryViewed;
 

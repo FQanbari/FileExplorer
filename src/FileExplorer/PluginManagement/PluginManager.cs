@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace FileExplorer.PluginManagement;
 
-public class PluginManager
+public class PluginManager : IPluginManager
 {
     public delegate void PluginLoadHandler(string pluginName, bool success);
     public event PluginLoadHandler PluginLoaded;

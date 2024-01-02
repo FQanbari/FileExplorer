@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace FileExplorer.SearchManagement;
 
-public class FileSearcher
+public class FileSearcher : IFileSearcher
 {
     public delegate void SearchCompletedHandler(string query, List<string> results);
     public event SearchCompletedHandler SearchCompleted;
@@ -53,7 +53,7 @@ public class FileSearcher
         string json = JsonConvert.SerializeObject(_searchHistory, Formatting.Indented);
         File.WriteAllText(_historyFilePath, json);
     }
-    
+
     private List<SearchHistoryEntry> LoadSearchHistory()
     {
         if (File.Exists(_historyFilePath))

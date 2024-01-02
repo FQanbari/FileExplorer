@@ -23,7 +23,7 @@ public static class InputValidator
         return allowedFileTypes.Contains(fileType.ToLower());
     }
 
-    // Validates other inputs as necessary, e.g., search queries, pluginManager names, etc.
+    // Validates other inputs as necessary, e.g., search queries, _pluginManager names, etc.
 
     // Example: Validates search query (basic implementation)
     public static bool IsValidSearchQuery(string query)
