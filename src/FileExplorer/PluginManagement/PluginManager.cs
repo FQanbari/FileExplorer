@@ -54,6 +54,10 @@ public class PluginManager
                 }
                 _pluginsUnloaded = pluginFiles.Length - _plugins.Count;
             }
+            else
+            {
+                Directory.CreateDirectory(pluginDirectory);
+            }
 
         }
         catch (Exception ex)

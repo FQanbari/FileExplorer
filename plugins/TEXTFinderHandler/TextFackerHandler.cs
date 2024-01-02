@@ -11,8 +11,6 @@ public class TextFackerHandler : IExtension
     public List<string> Execute(string rootDirectory, string searchQuery)
     {
         Task<List<string>> mainSearchTask = Task.Run(() => SearchFiles(rootDirectory, searchQuery));
-
-        // Wait for the main search task to complete
         List<string> foundFiles = mainSearchTask.Result;
 
         return foundFiles;

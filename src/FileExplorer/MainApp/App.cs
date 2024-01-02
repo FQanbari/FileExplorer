@@ -84,7 +84,19 @@ public class App
 
         string rootDirectory = consoleInterface.GetRootDirectory();
         string query = consoleInterface.GetQuery();
+
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        CancellationToken token = cancellationTokenSource.Token;
+        Thread loadingThread = new Thread(() => consoleInterface.ShowLoading(token));
+        loadingThread.Start();
+
         var foundFiles = fileSearcher.SearchFiles(rootDirectory, resultExtensions, query);
+
+        cancellationTokenSource.Cancel(); // Signal to stop the loading animation
+        loadingThread.Join(); // Wait for the loading thread to finish
+
+        consoleInterface.DisplayMessage("\nSearch completed.");
+
         fileSearcher.LogSearch(query, foundFiles.ToList());
 
         consoleInterface.DisplaySearchResults(foundFiles.ToList());
@@ -121,4 +133,6 @@ public class App
         consoleInterface.DisplayPlugins(plugins);
         // Add more plugin management functionalities here
     }
+
+    
 }

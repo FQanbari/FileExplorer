@@ -72,7 +72,7 @@ public class ConsoleInterface
 
     public void DisplayErrorMessage(string message)
     {
-        Console.WriteLine($"Error: {message}");
+        Helpers.Error($"Error: {message}");
     }
 
     public string GetQuery()
@@ -140,6 +140,20 @@ public class ConsoleInterface
     public void DisplayMessage(string message)
     {
         Console.WriteLine(message);
+    }
+    public void ShowLoading(CancellationToken token)
+    {
+        string loadingText = "Searching";
+        int loadingStep = 0;
+
+        while (!token.IsCancellationRequested)
+        {
+            Console.CursorLeft = 0;
+            Console.Write(loadingText + new string('.', loadingStep) + new string(' ', 10)); // Overwrite the line
+            Thread.Sleep(500); // Control the speed of the animation
+
+            loadingStep = (loadingStep + 1) % 4; // Change the number of dots
+        }
     }
 
     public void Stop()
