@@ -2,29 +2,30 @@
 
 namespace FileSearch
 {
-    [FileExplorerExtenstion("TXT")]
-    class FileMuliSearch : IExtension
+    [FileExplorerExtenstion("CSV")]
+    class SearchFilesInCsv : IExtension
     {
-        public string TypeName => "TXT";
+        public string TypeName => "CSV";
 
         public List<string> Execute(string rootDirectory, string searchQuery)
         {
-            var directories = Directory.GetDirectories(rootDirectory, "*", SearchOption.AllDirectories);
+            var allDirectories = new List<string> { rootDirectory };
+            allDirectories.AddRange(Directory.GetDirectories(rootDirectory, "*", SearchOption.AllDirectories));
 
             int threshold = 3;
             List<Task<List<string>>> tasks = new List<Task<List<string>>>();
 
-            if (directories.Length > threshold)
+            if (allDirectories.Count > threshold)
             {
-                for (int i = 0; i < directories.Length; i += threshold)
+                for (int i = 0; i < allDirectories.Count; i += threshold)
                 {
-                    var currentDirs = directories.Skip(i).Take(threshold).ToArray();
+                    var currentDirs = allDirectories.Skip(i).Take(threshold).ToArray();
                     tasks.Add(Task.Run(() => SearchFiles(currentDirs, searchQuery)));
                 }
             }
             else
             {
-                tasks.Add(Task.Run(() => SearchFiles(directories, searchQuery)));
+                tasks.Add(Task.Run(() => SearchFiles(allDirectories.ToArray(), searchQuery)));
             }
 
             var allResults = new List<string>();
@@ -45,21 +46,21 @@ namespace FileSearch
 
             foreach (var directory in directories)
             {
-                results.AddRange(SearchFilesInDirectory(directory, searchQuery));
+                results.AddRange(SearchInCsv(directory, searchQuery));
             }
 
             return results;
         }
 
-        static IEnumerable<string> SearchFilesInDirectory(string directory, string searchText)
+        static IEnumerable<string> SearchInCsv(string directory, string searchText)
         {
             var foundFiles = new List<string>();
 
             try
             {
-                var txtFiles = Directory.GetFiles(directory, "*.txt");
+                var csvFiles = Directory.GetFiles(directory, "*.csv");
 
-                foreach (var file in txtFiles)
+                foreach (var file in csvFiles)
                 {
                     bool isTextFound = Path.GetFileName(file).Contains(searchText);
 
@@ -67,14 +68,21 @@ namespace FileSearch
                     {
                         try
                         {
-                            var content = File.ReadAllText(file);
-                            if (content.Contains(searchText))
+                            var lines = File.ReadAllLines(file);
+
+                            foreach (var line in lines)
                             {
-                                isTextFound = true;
+                                var fields = line.Split(',');
+                                if (fields.Any(field => field.Contains(searchText)))
+                                {
+                                    isTextFound = true;
+                                    break;
+                                }
                             }
                         }
                         catch (IOException)
                         {
+                            // Handle or log the exception
                         }
                     }
 
@@ -86,6 +94,7 @@ namespace FileSearch
             }
             catch (UnauthorizedAccessException)
             {
+                // Handle or log the exception
             }
 
             return foundFiles;

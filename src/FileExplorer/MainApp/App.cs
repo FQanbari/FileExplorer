@@ -13,18 +13,20 @@ public class App
     private readonly PluginManager pluginManager;
     private string _pluginPath = "";
 
+
     public App()
     {
-        consoleInterface = new ConsoleInterface();
-        fileSearcher = new FileSearcher();
-        pluginManager = new PluginManager();
         _pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins");
         consoleInterface = new ConsoleInterface();
         fileSearcher = new FileSearcher();
+        pluginManager = new PluginManager();
+
         fileSearcher.SearchCompleted += FileSearcher_SearchCompleted;
-        //pluginManager.PluginLoaded += PluginManager_PluginLoaded;
+        // Uncomment and implement this event handler
+        // pluginManager.PluginLoaded += PluginManager_PluginLoaded; 
         consoleInterface.HistoryViewed += ConsoleInterface_HistoryViewed;
     }
+
 
     public void Run()
     {
@@ -134,5 +136,5 @@ public class App
         // Add more plugin management functionalities here
     }
 
-    
+
 }
