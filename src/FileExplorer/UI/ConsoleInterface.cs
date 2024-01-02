@@ -1,12 +1,9 @@
-﻿
-
-using FileExplorer.ExtensionPlatfrom;
-using FileExplorer.HistoryManagement;
-using FileExplorer.SearchManagement;
+﻿using FileExplorer.ExtensionPlatfrom;
+using FileExplorer.FileHandling;
 using FileExplorer.Utilities;
 using System.Linq;
 
-namespace FileExplorer.UserInterface;
+namespace FileExplorer.UI;
 
 public class ConsoleInterface : IConsoleInterface
 {
@@ -37,12 +34,12 @@ public class ConsoleInterface : IConsoleInterface
         }
     }
 
-    
+
     public List<string> GetFileExtension(List<string> extensions)
     {
         var extenstionsStr = extensions.Select((ext, index) => $"[{index + 1}]{ext}");
         Console.Write("Select one of these file types: ");
-        Console.Write($"{string.Join(" ",extenstionsStr)}: ");
+        Console.Write($"{string.Join(" ", extenstionsStr)}: ");
         var input = Console.ReadLine();
         var result = input.Split(",").ToList()
             .Select(indexStr => int.Parse(indexStr) - 1) // Convert to zero-based index

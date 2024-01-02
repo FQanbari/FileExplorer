@@ -1,4 +1,4 @@
-﻿namespace FileExplorer.SearchManagement;
+﻿namespace FileExplorer.FileHandling;
 
 public class SearchHistoryEntry
 {

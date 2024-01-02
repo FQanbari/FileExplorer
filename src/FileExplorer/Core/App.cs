@@ -1,16 +1,18 @@
-﻿using FileExplorer.SearchManagement;
-using FileExplorer.PluginManagement;
-using FileExplorer.UserInterface;
-using FileExplorer.ExtensionPlatfrom;
+﻿using FileExplorer.ExtensionPlatfrom;
 using FileExplorer.Utilities;
+using FileExplorer.PluginHandlers;
+using FileExplorer.FileHandling;
+using FileExplorer.Configuration;
+using FileExplorer.UI;
 
-namespace FileExplorer.MainApp;
+namespace FileExplorer.Core;
 public class App
 {
     private readonly IConsoleInterface _consoleInterface;
     private readonly IFileSearcher _fileSearcher;
     private readonly IPluginManager _pluginManager;
-    private string _pluginPath = "";    
+    private readonly AppConfig appConfig;
+    private string _pluginPath = "";
 
     public App(IConsoleInterface consoleInterface, IFileSearcher fileSearcher, IPluginManager pluginManager, AppConfig appConfig)
     {
@@ -19,6 +21,7 @@ public class App
         _consoleInterface = consoleInterface;
         _fileSearcher = fileSearcher;
         _pluginManager = pluginManager;
+        this.appConfig = appConfig;
 
         fileSearcher.SearchCompleted += FileSearcher_SearchCompleted;
         // Uncomment and implement this event handler
@@ -30,7 +33,7 @@ public class App
     public void Run()
     {
         bool isRunning = true;
-        _pluginManager.LoadPlugins(_pluginPath);
+        _pluginManager.LoadPlugins(_pluginPath, appConfig);
         while (isRunning)
         {
             //_consoleInterface.Clear();

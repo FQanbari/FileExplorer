@@ -6,6 +6,7 @@ namespace TEXTFinderHandler;
 public class TextFackerHandler : IExtension
 {
     public string TypeName => "TXT";
+    public int SearchThreshold { get; set; }
     static List<string> foundFiles = new List<string>();
     static object lockObject = new object();
     public List<string> Execute(string rootDirectory, string searchQuery)

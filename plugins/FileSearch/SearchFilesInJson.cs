@@ -11,20 +11,20 @@ namespace FileSearch;
 class SearchFilesInJson : IExtension
 {
     public string TypeName => "JSON";
+    public int SearchThreshold { get; set; }
 
     public List<string> Execute(string rootDirectory, string searchQuery)
     {
         var allDirectories = new List<string> { rootDirectory };
         allDirectories.AddRange(Directory.GetDirectories(rootDirectory, "*", SearchOption.AllDirectories));
 
-        int threshold = 3;
         List<Task<List<string>>> tasks = new List<Task<List<string>>>();
 
-        if (allDirectories.Count > threshold)
+        if (allDirectories.Count > SearchThreshold)
         {
-            for (int i = 0; i < allDirectories.Count; i += threshold)
+            for (int i = 0; i < allDirectories.Count; i += SearchThreshold)
             {
-                var currentDirs = allDirectories.Skip(i).Take(threshold).ToArray();
+                var currentDirs = allDirectories.Skip(i).Take(SearchThreshold).ToArray();
                 tasks.Add(Task.Run(() => SearchFiles(currentDirs, searchQuery)));
             }
         }

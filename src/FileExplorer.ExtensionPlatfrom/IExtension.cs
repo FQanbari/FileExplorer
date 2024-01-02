@@ -5,7 +5,7 @@ namespace FileExplorer.ExtensionPlatfrom;
 public interface IExtension
 {
     public string TypeName { get; }
-
+    public int SearchThreshold { get; set; }
     public List<string> Execute(string rootDirectory, string searchQuery);
 
     public bool CanHandleFileExtension(string fileExtension)

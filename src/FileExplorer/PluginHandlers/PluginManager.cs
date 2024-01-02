@@ -1,7 +1,8 @@
-﻿using FileExplorer.ExtensionPlatfrom;
+﻿using FileExplorer.Configuration;
+using FileExplorer.ExtensionPlatfrom;
 using System.Reflection;
 
-namespace FileExplorer.PluginManagement;
+namespace FileExplorer.PluginHandlers;
 
 public class PluginManager : IPluginManager
 {
@@ -9,13 +10,15 @@ public class PluginManager : IPluginManager
     public event PluginLoadHandler PluginLoaded;
     private List<(IExtension extension, string name)> _plugins = new List<(IExtension, string)>();
     private int _pluginsUnloaded;
+    private readonly AppConfig _appConfig;
 
-    public PluginManager()
+    public PluginManager(AppConfig appConfig)
     {
         _plugins = new List<(IExtension, string)>();
+        _appConfig = appConfig;
     }
 
-    public void LoadPlugins(string pluginDirectory)
+    public void LoadPlugins(string pluginDirectory, AppConfig appConfig)
     {
         try
         {
@@ -39,12 +42,22 @@ public class PluginManager : IPluginManager
                             IExtension plugin = Activator.CreateInstance(pluginType) as IExtension;
 
                             if (plugin != null && plugin.CanHandleFileExtension(plugin.TypeName))
-                                _plugins.Add((plugin, pluginName));
+                            {
+                                if (_appConfig.PluginSearchThresholds.TryGetValue(pluginType.Name, out int threshold))
+                                {
+                                    plugin.SearchThreshold = threshold;
+                                }
+                                else
+                                {
+                                    plugin.SearchThreshold = _appConfig.DefaultSearchThreshold;
+                                }
+                                _plugins.Add((plugin, pluginName)); 
+                            }
                             else
                                 _pluginsUnloaded++;
 
-
                         }
+
                         OnPluginLoaded(pluginName, true); // Assuming you extract pluginName somehow
                     }
                     catch (Exception ex)
@@ -70,7 +83,7 @@ public class PluginManager : IPluginManager
     public string GetWarning()
     {
         return _pluginsUnloaded > 0 ?
-        ($"NOTE: There was a problem with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n")
+        $"NOTE: There was a problem with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n"
         : "";
 
     }
@@ -80,7 +93,7 @@ public class PluginManager : IPluginManager
     }
     public List<(IExtension Extension, string Name)> GetPluginsForExtension(string fileExtension)
     {
-        return  _plugins.Where(plugin => plugin.extension.CanHandleFileExtension(fileExtension)).ToList();
+        return _plugins.Where(plugin => plugin.extension.CanHandleFileExtension(fileExtension)).ToList();
     }
     public List<string> GetTypeAllPlugins()
     {

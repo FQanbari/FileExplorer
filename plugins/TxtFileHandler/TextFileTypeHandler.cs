@@ -9,7 +9,7 @@ namespace TxtFileHandler;
 public class TextFileTypeHandler : IExtension
 {
     public string TypeName => "TXT";
-
+    public int SearchThreshold { get; set; }
     public List<string> Execute(string rootDirectory, string searchQuery)
     {
         var result = new List<string>();
@@ -106,6 +106,7 @@ public class TextFileTypeHandler : IExtension
 public class TextFileTypeCGHandler : IExtension
 {
     public string TypeName => "TXT";
+    public int SearchThreshold { get; set; }
 
     public List<string> Execute(string rootDirectory, string searchQuery)
     {
@@ -116,18 +117,18 @@ public class TextFileTypeCGHandler : IExtension
         return result;
     }
 
-    static void SearchFiles(string directory, string searchQuery, List<string> result)
+    void SearchFiles(string directory, string searchQuery, List<string> result)
     {
         try
         {
             string[] files = Directory.GetFiles(directory, "*.txt");
 
-            if (files.Length > 3)
+            if (files.Length > SearchThreshold)
             {
                 var tasks = new List<Task>();
-                for (int i = 0; i < files.Length; i += 3)
+                for (int i = 0; i < files.Length; i += SearchThreshold)
                 {
-                    var batchFiles = files.Skip(i).Take(3).ToArray();
+                    var batchFiles = files.Skip(i).Take(SearchThreshold).ToArray();
                     tasks.Add(Task.Run(() => SearchFilesInBatch(batchFiles, searchQuery, result)));
                 }
 

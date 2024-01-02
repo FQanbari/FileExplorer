@@ -1,6 +1,6 @@
 ﻿using FileExplorer.ExtensionPlatfrom;
 
-namespace FileExplorer.PluginManagement;
+namespace FileExplorer.PluginHandlers;
 
 public class PluginFactory
 {

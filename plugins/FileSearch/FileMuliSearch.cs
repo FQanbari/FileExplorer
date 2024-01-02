@@ -7,18 +7,20 @@ namespace FileSearch
     {
         public string TypeName => "TXT";
 
+        public int SearchThreshold { get; set; }
+
         public List<string> Execute(string rootDirectory, string searchQuery)
         {
-            var directories = Directory.GetDirectories(rootDirectory, "*", SearchOption.AllDirectories);
+            var directories = new List<string> { rootDirectory };
+            directories.AddRange(Directory.GetDirectories(rootDirectory, "*", SearchOption.AllDirectories));
 
-            int threshold = 3;
             List<Task<List<string>>> tasks = new List<Task<List<string>>>();
 
-            if (directories.Length > threshold)
+            if (directories.Count > SearchThreshold)
             {
-                for (int i = 0; i < directories.Length; i += threshold)
+                for (int i = 0; i < directories.Count; i += SearchThreshold)
                 {
-                    var currentDirs = directories.Skip(i).Take(threshold).ToArray();
+                    var currentDirs = directories.Skip(i).Take(SearchThreshold).ToList();
                     tasks.Add(Task.Run(() => SearchFiles(currentDirs, searchQuery)));
                 }
             }
@@ -39,7 +41,7 @@ namespace FileSearch
             return allResults;
         }
 
-        static List<string> SearchFiles(string[] directories, string searchQuery)
+        static List<string> SearchFiles(List<string> directories, string searchQuery)
         {
             var results = new List<string>();
 

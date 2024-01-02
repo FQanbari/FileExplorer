@@ -12,10 +12,12 @@ namespace FileSearch
     class FileSearch : IExtension
     {
         public string TypeName => "TXT";
+        public int SearchThreshold { get; set; }
 
-        public async Task<List<string>> SearchFilesAsync(string rootPath, string query)
+        public async Task<List<string>> SearchFilesAsync(string rootDirectory, string query)
         {
-            var directories = Directory.GetDirectories(rootPath, "*", SearchOption.AllDirectories);
+            var directories = new List<string> { rootDirectory };
+            directories.AddRange(Directory.GetDirectories(rootDirectory, "*", SearchOption.AllDirectories));
             var searchTasks = new List<Task<List<string>>>();
 
             foreach (var dir in directories)

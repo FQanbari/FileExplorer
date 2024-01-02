@@ -1,23 +1,23 @@
-﻿using FileExplorer.SearchManagement;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace FileExplorer.HistoryManagement;
+namespace FileExplorer.FileHandling;
 
 public class HistoryManager
 {
     private readonly string _filePath;
-    private List<string> searchHistory = new List<string>();
+    private List<string> _searchHistory ;
 
     public HistoryManager(string filePath)
     {
-        this._filePath = filePath;
+        _filePath = filePath;
+        _searchHistory = new List<string>();
     }
     public List<SearchHistoryEntry> LoadSearchHistory()
     {
         try
         {
             // Load search history from the file
-            searchHistory = File.ReadAllLines(_filePath).ToList();
+            _searchHistory = File.ReadAllLines(_filePath).ToList();
             if (File.Exists(_filePath))
             {
                 string json = File.ReadAllText(_filePath);
