@@ -258,10 +258,10 @@ public class ConsoleInterface : IConsoleInterface
         while (!token.IsCancellationRequested)
         {
             Console.CursorLeft = 0;
-            Console.Write(loadingText + new string('.', loadingStep) + new string(' ', 10)); // Overwrite the line
-            Thread.Sleep(500); // Control the speed of the animation
+            Console.Write(loadingText + new string('.', loadingStep) + new string(' ', 10)); 
+            Thread.Sleep(500); 
 
-            loadingStep = (loadingStep + 1) % 4; // Change the number of dots
+            loadingStep = (loadingStep + 1) % 4; 
         }
     }
 

@@ -24,7 +24,7 @@ public class App
         this.appConfig = appConfig;
 
         fileSearcher.SearchCompleted += FileSearcher_SearchCompleted;
-        // Uncomment and implement this event handler
+
         // _pluginManager.PluginLoaded += PluginManager_PluginLoaded; 
         consoleInterface.HistoryViewed += ConsoleInterface_HistoryViewed;
     }
