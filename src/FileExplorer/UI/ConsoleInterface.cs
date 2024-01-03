@@ -12,9 +12,9 @@ public class ConsoleInterface : IConsoleInterface
     public void DisplayMainMenu()
     {
         Helpers.Enter();
-        Helpers.Info("1. Search for files");
-        Helpers.Info("2. Manage Extensions");
-        Helpers.Info("3. View search history\n");
+        Console.WriteLine("1. Search for files");
+        Console.WriteLine("2. Manage Extensions");
+        Console.WriteLine("3. View search history\n");
         Helpers.Error("4. Exit");
         Helpers.Enter();
     }
@@ -35,25 +35,60 @@ public class ConsoleInterface : IConsoleInterface
     }
 
 
-    public List<string> GetFileExtension(List<string> extensions)
+    public List<string> GetFileExtension(List<string> extensions, string defaultExtension = "txt")
     {
-        var extenstionsStr = extensions.Select((ext, index) => $"[{index + 1}]{ext}");
-        Console.Write("Select one of these file types: ");
-        Console.Write($"{string.Join(" ", extenstionsStr)}: ");
+        var extensionsStr = extensions.Select((ext, index) => $"[{index + 1}]{ext}");
+        Console.Write("Select one of these file types (press Enter for default): ");
+        Console.Write($"{string.Join(" ", extensionsStr)} :");
+
         var input = Console.ReadLine();
-        var result = input.Split(",").ToList()
-            .Select(indexStr => int.Parse(indexStr) - 1) // Convert to zero-based index
-            .Where(index => index >= 0 && index < extensions.Count) // Check bounds
-            .Select(index => extensions[index])
-            .ToList();
-        return result;
+
+        // Check if the input is empty and return the default extension
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return new List<string> { defaultExtension };
+        }
+
+        var inputParts = input.Split(",");
+        var validIndices = new List<int>();
+        bool allInputsValid = true;
+
+        foreach (var part in inputParts)
+        {
+            if (InputValidator.ValidateFileExtension(part, extensions, out int index))
+            {
+                validIndices.Add(index);
+            }
+            else
+            {
+                allInputsValid = false;
+                break;
+            }
+        }
+
+        if (allInputsValid)
+        {
+            return validIndices.Select(index => extensions[index]).ToList();
+        }
+        else
+        {
+            Helpers.Error("Invalid choice. Please enter valid numbers separated by commas like 1,2");
+            return GetFileExtension(extensions, defaultExtension); // Recursively call the method again for valid input
+        }
     }
+
 
     public string GetRootDirectory()
     {
-        Console.Write("Pick the root path: ");
-        var input = Console.ReadLine();
-        return input;
+        string input = "";
+        string validatedDirectory = "";
+        do
+        {
+            Console.Write("Pick the root path: ");
+            input = Console.ReadLine();
+        } while (!InputValidator.ValidateDirectory(input, out validatedDirectory));
+
+        return validatedDirectory;
     }
 
     public void DisplaySearchResults(List<string> foundFiles)
@@ -74,9 +109,15 @@ public class ConsoleInterface : IConsoleInterface
 
     public string GetQuery()
     {
-        Console.Write("Query: ");
-        var input = Console.ReadLine();
-        return input;
+        string input = "";
+        string validatedString = "";
+        do
+        {
+            Console.Write("Query: ");
+            input = Console.ReadLine();
+        } while (!InputValidator.ValidateNonEmptyString(input, out validatedString));
+        
+        return validatedString;
     }
 
     public void Warning(string warning)
@@ -121,18 +162,65 @@ public class ConsoleInterface : IConsoleInterface
             }
         }
     }
-    public IExtension ChoosePlugin(List<(IExtension extenstion, string name)> plugins)
+    public void DisplayPlugins(List<(IExtension Extension, string Name)> loadedPlugins, List<(string FileName, string Reason)> unloadedPlugins)
     {
-        Console.WriteLine("Multiple plugins can handle this file type. Please choose one:");
-        int i = 0;
-        foreach (var plugin in plugins)
+        Console.WriteLine("Loaded Plugins:");
+        if (loadedPlugins.Any())
         {
-            Console.WriteLine($"{i + 1}. {plugin.name}");
-            i++;
+            foreach (var plugin in loadedPlugins)
+            {
+                Console.WriteLine($"- {plugin.Name}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No loaded plugins.");
         }
 
-        int choice = Convert.ToInt32(Console.ReadLine()) - 1;
-        return plugins[choice].extenstion;
+        Helpers.Error("\nUnloaded Plugins:");
+        if (unloadedPlugins.Any())
+        {
+            foreach (var plugin in unloadedPlugins)
+            {
+                Helpers.Error($"- {plugin.FileName}: {plugin.Reason}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No unloaded plugins.");
+        }
+    }
+    public IExtension ChoosePlugin(List<(IExtension extension, string name)> plugins)
+    {
+        int choice = 0;
+        if (plugins == null || plugins.Count == 0)
+        {
+            Helpers.Info("No plugins available.");
+            return null; // Or handle this case as appropriate for your application
+        }
+
+        Console.WriteLine("Multiple plugins can handle this file type. Please choose one:");
+        for (int i = 0; i < plugins.Count; i++)
+        {
+            Console.WriteLine($"[{i + 1}]. {plugins[i].name}");
+        }
+
+        while (true)
+        {
+            Console.Write("Enter your choice (number): ");
+            string input = Console.ReadLine();
+
+            if (InputValidator.ValidateInteger(input, out choice) && choice > 0 && choice <= plugins.Count)
+            {
+                return plugins[choice - 1].extension;
+            }
+            else
+            {
+                Helpers.Error("Invalid choice. Please enter a valid number from the list.");
+            }
+        }
+        //choice = Convert.ToInt32(Console.ReadLine()) - 1;
+        //return plugins[choice].extension;
     }
     public void DisplayMessage(string message)
     {

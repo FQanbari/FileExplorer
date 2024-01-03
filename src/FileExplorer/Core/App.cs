@@ -65,7 +65,7 @@ public class App
 
     private void SearchByExtension()
     {
-        List<string> chosenTypes = _consoleInterface.GetFileExtension(_pluginManager.GetTypeAllPlugins());
+        List<string> chosenTypes = _consoleInterface.GetFileExtension(_pluginManager.GetTypeAllPlugins(), appConfig.DefaultSearchType);
 
         List<IExtension> resultExtensions = new List<IExtension>();
         foreach (var choosType in chosenTypes)
@@ -94,8 +94,8 @@ public class App
 
         var foundFiles = _fileSearcher.SearchFiles(rootDirectory, resultExtensions, query);
 
-        cancellationTokenSource.Cancel(); // Signal to stop the loading animation
-        loadingThread.Join(); // Wait for the loading thread to finish
+        cancellationTokenSource.Cancel(); 
+        loadingThread.Join(); 
 
         _consoleInterface.DisplayMessage("\nSearch completed.");
 
@@ -131,9 +131,9 @@ public class App
     }
     private void ManagePlugins()
     {
-        var plugins = _pluginManager.ListPlugins();
-        _consoleInterface.DisplayPlugins(plugins);
-        // Add more plugin management functionalities here
+        var loadedPlugins = _pluginManager.ListPlugins();
+        var unloadedPlugins = _pluginManager.GetUnloadedPlugins();
+        _consoleInterface.DisplayPlugins(loadedPlugins, unloadedPlugins);
     }
 
 

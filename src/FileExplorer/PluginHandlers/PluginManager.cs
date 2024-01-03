@@ -9,7 +9,7 @@ public class PluginManager : IPluginManager
     public delegate void PluginLoadHandler(string pluginName, bool success);
     public event PluginLoadHandler PluginLoaded;
     private List<(IExtension extension, string name)> _plugins = new List<(IExtension, string)>();
-    private int _pluginsUnloaded;
+    private readonly List<(string FileName, string Reason)> _unloadedPlugins = new List<(string, string)>();
     private readonly AppConfig _appConfig;
 
     public PluginManager(AppConfig appConfig)
@@ -36,6 +36,10 @@ public class PluginManager : IPluginManager
                         var pluginTypes = assembly.GetTypes()
                             .Where(type => typeof(IExtension).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
 
+                        if (pluginTypes.Any() == false)
+                        {
+                            _unloadedPlugins.Add((Path.GetFileName(pluginFile), "No types implementing IExtension found"));
+                        }
                         foreach (var pluginType in pluginTypes)
                         {
                             pluginName = pluginType.FullName;
@@ -54,7 +58,7 @@ public class PluginManager : IPluginManager
                                 _plugins.Add((plugin, pluginName)); 
                             }
                             else
-                                _pluginsUnloaded++;
+                                _unloadedPlugins.Add((Path.GetFileName(pluginFile), "No types implementing IExtension found")); ;
 
                         }
 
@@ -62,10 +66,10 @@ public class PluginManager : IPluginManager
                     }
                     catch (Exception ex)
                     {
+                        _unloadedPlugins.Add((Path.GetFileName(pluginFile), ex.Message));
                         OnPluginLoaded(pluginFile, false);
                     }
                 }
-                _pluginsUnloaded = pluginFiles.Length - _plugins.Count;
             }
             else
             {
@@ -82,14 +86,18 @@ public class PluginManager : IPluginManager
 
     public string GetWarning()
     {
-        return _pluginsUnloaded > 0 ?
-        $"NOTE: There was a problem with loading {_pluginsUnloaded} extensions. View them in Manage Extenstions section.\n"
+        return _unloadedPlugins.Count > 0 ?
+        $"NOTE: There was a problem with loading {_unloadedPlugins.Count} extensions. View them in Manage Extenstions section.\n"
         : "";
 
     }
     public List<(IExtension Extension, string Name)> ListPlugins()
     {
         return _plugins;
+    }
+    public List<(string FileName, string Reason)> GetUnloadedPlugins()
+    {
+        return _unloadedPlugins;
     }
     public List<(IExtension Extension, string Name)> GetPluginsForExtension(string fileExtension)
     {
