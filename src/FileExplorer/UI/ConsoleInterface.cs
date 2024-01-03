@@ -147,7 +147,7 @@ public class ConsoleInterface : IConsoleInterface
     }
     public void DisplayPlugins(List<(IExtension Extension, string Name, bool IsEnabled)> plugins)
     {
-        Console.WriteLine("Loaded Plugins:");
+        Console.WriteLine("\nLoaded Plugins:");
         var pluginsGroupedByType = plugins
            .GroupBy(p => p.Extension.TypeName)
            .OrderBy(g => g.Key);
@@ -200,7 +200,7 @@ public class ConsoleInterface : IConsoleInterface
     }
     public string ChoosePluginToToggle(List<(IExtension Extension, string Name, bool IsEnabled)> plugins)
     {
-        Console.WriteLine("Select a plugin to toggle (enable/disable):");
+        Console.WriteLine("\nSelect a plugin to toggle (enable/disable):");
         for (int i = 0; i < plugins.Count; i++)
         {
             Console.WriteLine($"{i + 1}. {plugins[i].Name}");
