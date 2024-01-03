@@ -132,6 +132,24 @@ public class App
         var loadedPlugins = _pluginManager.ListPlugins();
         var unloadedPlugins = _pluginManager.GetUnloadedPlugins();
         _consoleInterface.DisplayPlugins(loadedPlugins, unloadedPlugins);
+
+        string pluginName = _consoleInterface.ChoosePluginToToggle(loadedPlugins);
+        if (pluginName != null)
+        {
+            var plugin = loadedPlugins.FirstOrDefault(p => p.Name == pluginName);
+            if (plugin.IsEnabled)
+            {
+                _pluginManager.DisablePlugin(pluginName);
+            }
+            else
+            {
+                _pluginManager.EnablePlugin(pluginName);
+            }
+        }
+
+        loadedPlugins = _pluginManager.ListPlugins();
+        _consoleInterface.DisplayPlugins(loadedPlugins);
+
     }
 
 

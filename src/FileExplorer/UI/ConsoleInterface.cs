@@ -145,7 +145,7 @@ public class ConsoleInterface : IConsoleInterface
         }
         OnHistoryViewed();
     }
-    public void DisplayPlugins(List<(IExtension Extension, string Name)> plugins)
+    public void DisplayPlugins(List<(IExtension Extension, string Name, bool IsEnabled)> plugins)
     {
         Console.WriteLine("Loaded Plugins:");
         var pluginsGroupedByType = plugins
@@ -157,18 +157,27 @@ public class ConsoleInterface : IConsoleInterface
             Console.WriteLine($"{group.Key}:");
             foreach (var plugin in group)
             {
-                Console.WriteLine($"   - {plugin.Name}");
+                string status = plugin.IsEnabled ? "Enabled" : "Disabled";
+                Console.WriteLine($"- {plugin.Name} [{status}]");
             }
         }
     }
-    public void DisplayPlugins(List<(IExtension Extension, string Name)> loadedPlugins, List<(string FileName, string Reason)> unloadedPlugins)
+    public void DisplayPlugins(List<(IExtension Extension, string Name, bool IsEnabled)> loadedPlugins, List<(string FileName, string Reason)> unloadedPlugins)
     {
-        Console.WriteLine("Loaded Plugins:");
+        Console.WriteLine("\nLoaded Plugins:");
+        var pluginsGroupedByType = loadedPlugins
+           .GroupBy(p => p.Extension.TypeName)
+           .OrderBy(g => g.Key);
         if (loadedPlugins.Any())
         {
-            foreach (var plugin in loadedPlugins)
+            foreach (var group in pluginsGroupedByType)
             {
-                Console.WriteLine($"- {plugin.Name}");
+                Console.WriteLine($"{group.Key}:");
+                foreach (var plugin in group)
+                {
+                    string status = plugin.IsEnabled ? "Enabled" : "Disabled";
+                    Console.WriteLine($"- {plugin.Name} [{status}]");
+                }
             }
         }
         else
@@ -189,7 +198,24 @@ public class ConsoleInterface : IConsoleInterface
             Console.WriteLine("No unloaded plugins.");
         }
     }
-    public IExtension ChoosePlugin(List<(IExtension extension, string name)> plugins)
+    public string ChoosePluginToToggle(List<(IExtension Extension, string Name, bool IsEnabled)> plugins)
+    {
+        Console.WriteLine("Select a plugin to toggle (enable/disable):");
+        for (int i = 0; i < plugins.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {plugins[i].Name}");
+        }
+
+        Console.Write("Enter your choice (or Enter to back menu): ");
+        string input = Console.ReadLine();
+        if (int.TryParse(input, out int choice) && choice > 0 && choice <= plugins.Count)
+        {
+            return plugins[choice - 1].Name;
+        }
+
+        return null;
+    }
+    public IExtension ChoosePlugin(List<(IExtension extension, string name, bool IsEnabled)> plugins)
     {
         int choice = 0;
         if (plugins == null || plugins.Count == 0)

@@ -8,13 +8,15 @@ public class PluginManager : IPluginManager
 {
     public delegate void PluginLoadHandler(string pluginName, bool success);
     public event PluginLoadHandler PluginLoaded;
-    private List<(IExtension extension, string name)> _plugins = new List<(IExtension, string)>();
-    private readonly List<(string FileName, string Reason)> _unloadedPlugins = new List<(string, string)>();
+    //private List<(IExtension extension, string name)> _plugins = new List<(IExtension, string)>();
+    private List<(IExtension Extension, string Name, bool IsEnabled)> _plugins;
+    private readonly List<(string FileName, string Reason)> _unloadedPlugins ;
     private readonly AppConfig _appConfig;
 
     public PluginManager(AppConfig appConfig)
     {
-        _plugins = new List<(IExtension, string)>();
+        _plugins = new List<(IExtension, string, bool IsEnabled)>();
+        _unloadedPlugins = new List<(string, string)>();
         _appConfig = appConfig;
     }
 
@@ -55,7 +57,7 @@ public class PluginManager : IPluginManager
                                 {
                                     plugin.SearchThreshold = _appConfig.DefaultSearchThreshold;
                                 }
-                                _plugins.Add((plugin, pluginName)); 
+                                _plugins.Add((plugin, pluginName,true)); 
                             }
                             else
                                 _unloadedPlugins.Add((Path.GetFileName(pluginFile), "No types implementing IExtension found")); ;
@@ -91,26 +93,45 @@ public class PluginManager : IPluginManager
         : "";
 
     }
-    public List<(IExtension Extension, string Name)> ListPlugins()
+    public List<(IExtension Extension, string Name, bool IsEnabled)> ListPlugins()
     {
         return _plugins;
+    }
+    public void EnablePlugin(string pluginName)
+    {
+        var plugin = _plugins.FirstOrDefault(p => p.Name == pluginName);
+        if (plugin.Extension != null)
+        {
+            _plugins.Remove(plugin);
+            _plugins.Add((plugin.Extension, plugin.Name, true));
+        }
+    }
+
+    public void DisablePlugin(string pluginName)
+    {
+        var plugin = _plugins.FirstOrDefault(p => p.Name == pluginName);
+        if (plugin.Extension != null)
+        {
+            _plugins.Remove(plugin);
+            _plugins.Add((plugin.Extension, plugin.Name, false));
+        }
     }
     public List<(string FileName, string Reason)> GetUnloadedPlugins()
     {
         return _unloadedPlugins;
     }
-    public List<(IExtension Extension, string Name)> GetPluginsForExtension(string fileExtension)
+    public List<(IExtension Extension, string Name, bool IsEnabled)> GetPluginsForExtension(string fileExtension)
     {
-        return _plugins.Where(plugin => plugin.extension.CanHandleFileExtension(fileExtension)).ToList();
+        return _plugins.Where(plugin => plugin.Extension.CanHandleFileExtension(fileExtension)).Where(plugin => plugin.IsEnabled).ToList();
     }
     public List<string> GetTypeAllPlugins()
     {
-        return _plugins.GroupBy(x => x.extension.TypeName).Select(x => x.Key).ToList();
+        return _plugins.Where(plugin => plugin.IsEnabled).GroupBy(x => x.Extension.TypeName).Select(x => x.Key).ToList();
     }
     public List<IExtension> GetPluginsByExtensionsInput(List<string> fileExtensions)
     {
         return _plugins.Where(plugin => fileExtensions
-        .Any(extension => plugin.extension.TypeName.Contains(extension, StringComparison.OrdinalIgnoreCase))).Select(plugin => plugin.extension).ToList();
+        .Any(extension => plugin.Extension.TypeName.Contains(extension, StringComparison.OrdinalIgnoreCase))).Where(plugin => plugin.IsEnabled).Select(plugin => plugin.Extension).ToList();
     }
     private void OnPluginLoaded(string pluginName, bool success)
     {
