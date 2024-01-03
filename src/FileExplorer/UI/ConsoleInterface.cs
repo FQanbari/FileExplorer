@@ -43,7 +43,6 @@ public class ConsoleInterface : IConsoleInterface
 
         var input = Console.ReadLine();
 
-        // Check if the input is empty and return the default extension
         if (string.IsNullOrWhiteSpace(input))
         {
             return new List<string> { defaultExtension };
@@ -73,7 +72,7 @@ public class ConsoleInterface : IConsoleInterface
         else
         {
             Helpers.Error("Invalid choice. Please enter valid numbers separated by commas like 1,2");
-            return GetFileExtension(extensions, defaultExtension); // Recursively call the method again for valid input
+            return GetFileExtension(extensions, defaultExtension); 
         }
     }
 
@@ -142,7 +141,7 @@ public class ConsoleInterface : IConsoleInterface
             {
                 Console.WriteLine($"- {result}");
             }
-            Console.WriteLine(); // Adds a blank line for better readability
+            Console.WriteLine(); 
         }
         OnHistoryViewed();
     }
@@ -196,7 +195,7 @@ public class ConsoleInterface : IConsoleInterface
         if (plugins == null || plugins.Count == 0)
         {
             Helpers.Info("No plugins available.");
-            return null; // Or handle this case as appropriate for your application
+            return null; 
         }
 
         Console.WriteLine("Multiple plugins can handle this file type. Please choose one:");
@@ -219,8 +218,7 @@ public class ConsoleInterface : IConsoleInterface
                 Helpers.Error("Invalid choice. Please enter a valid number from the list.");
             }
         }
-        //choice = Convert.ToInt32(Console.ReadLine()) - 1;
-        //return plugins[choice].extension;
+
     }
     public void DisplayMessage(string message)
     {

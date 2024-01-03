@@ -18,7 +18,7 @@ public class TextHandler
             try
             {
                 string content = File.ReadAllText(filePath);
-                _contents.Add(content); // Storing the content of each file
+                _contents.Add(content); 
             }
             catch (Exception ex)
             {

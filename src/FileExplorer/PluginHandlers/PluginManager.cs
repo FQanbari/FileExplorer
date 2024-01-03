@@ -62,7 +62,7 @@ public class PluginManager : IPluginManager
 
                         }
 
-                        OnPluginLoaded(pluginName, true); // Assuming you extract pluginName somehow
+                        OnPluginLoaded(pluginName, true); 
                     }
                     catch (Exception ex)
                     {

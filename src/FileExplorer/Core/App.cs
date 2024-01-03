@@ -110,7 +110,6 @@ public class App
     }
     private void FileSearcher_SearchCompleted(string query, List<string> results)
     {
-        // Example: Log the completion of the search
         _consoleInterface.DisplayMessage($"Search for '{query}' completed. {results.Count} results found.");
     }
     private void PluginManager_PluginLoaded(string pluginName, bool success)
@@ -126,7 +125,6 @@ public class App
     }
     private void ConsoleInterface_HistoryViewed(object sender, EventArgs e)
     {
-        // Example action when history is viewed
         _consoleInterface.DisplayMessage("Search history was viewed.");
     }
     private void ManagePlugins()

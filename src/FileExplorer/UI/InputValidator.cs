@@ -8,14 +8,12 @@ public static class InputValidator
     {
         validatedIndex = -1;
 
-        // Check if the input is a valid integer
         if (!int.TryParse(input, out int inputIndex) || inputIndex <= 0 || inputIndex > validExtensions.Count)
         {
             Helpers.Error($"Invalid input. Please enter a number between 1 and {validExtensions.Count}.");
             return false;
         }
 
-        // Adjust for zero-based indexing
         validatedIndex = inputIndex - 1;
         return true;
 
@@ -57,6 +55,4 @@ public static class InputValidator
 
         return true;
     }
-
-    // Add more validation methods as needed...
 }

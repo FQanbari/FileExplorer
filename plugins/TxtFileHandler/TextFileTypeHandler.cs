@@ -44,7 +44,6 @@ public class TextFileTypeHandler : IExtension
                 }
             }
 
-            // Recursively search in subdirectories
             string[] subDirectories = Directory.GetDirectories(directory);
             foreach (var subDir in subDirectories)
             {
@@ -53,7 +52,6 @@ public class TextFileTypeHandler : IExtension
         }
         catch (Exception ex)
         {
-            // Console.WriteLine($"Error processing directory {directory}: {ex.Message}");
         }
     }
 
@@ -76,8 +74,6 @@ public class TextFileTypeHandler : IExtension
         }
         catch (Exception ex)
         {
-            // Handle exceptions if needed
-            // Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
         }
     }
 
@@ -142,7 +138,6 @@ public class TextFileTypeCGHandler : IExtension
                 }
             }
 
-            // Recursively search in subdirectories
             string[] subDirectories = Directory.GetDirectories(directory);
             foreach (var subDir in subDirectories)
             {
@@ -151,7 +146,6 @@ public class TextFileTypeCGHandler : IExtension
         }
         catch (Exception ex)
         {
-            // Console.WriteLine($"Error processing directory {directory}: {ex.Message}");
         }
     }
 
@@ -174,8 +168,6 @@ public class TextFileTypeCGHandler : IExtension
         }
         catch (Exception ex)
         {
-            // Handle exceptions if needed
-            // Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
         }
     }
 

@@ -16,7 +16,6 @@ public class HistoryManager
     {
         try
         {
-            // Load search history from the file
             _searchHistory = File.ReadAllLines(_filePath).ToList();
             if (File.Exists(_filePath))
             {

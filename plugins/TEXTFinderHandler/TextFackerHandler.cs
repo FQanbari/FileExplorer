@@ -24,15 +24,12 @@ public class TextFackerHandler : IExtension
 
             try
             {
-                // Get all .txt files in the current directory
                 string[] txtFiles = Directory.GetFiles(directory, "*.txt");
 
-                // Use Task to run the file search in parallel
                 Task fileSearchTask = Task.Run(() =>
                 {
                     foreach (var currentFile in txtFiles)
                     {
-                        // Check if the file content contains the search term
                         string fileContent = File.ReadAllText(currentFile);
                         if (fileContent.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                         {
@@ -44,18 +41,15 @@ public class TextFackerHandler : IExtension
                     }
                 });
 
-                // Wait for the file search task to complete
                 fileSearchTask.Wait();
             }
             catch (UnauthorizedAccessException)
             {
-                // Handle the case where access to the directory is denied
                 Console.WriteLine($"Access to the path '{directory}' is denied.");
             }
 
             try
             {
-                // Recursively search subdirectories using Thread
                 string[] subdirectories = Directory.GetDirectories(directory);
                 foreach (var currentSubdirectory in subdirectories)
                 {
@@ -73,7 +67,6 @@ public class TextFackerHandler : IExtension
             }
             catch (UnauthorizedAccessException)
             {
-                // Handle the case where access to a subdirectory is denied
                 Console.WriteLine($"Access to a subdirectory in '{directory}' is denied.");
             }
 
