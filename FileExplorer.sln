@@ -9,9 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TXTFileHandler", "plugins\T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileExplorer.ExtensionPlatfrom", "src\FileExplorer.ExtensionPlatfrom\FileExplorer.ExtensionPlatfrom.csproj", "{CF8093FA-40F2-442F-8BF7-DDAA3A5BD1D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEXTFinderHandler", "plugins\TEXTFinderHandler\TEXTFinderHandler.csproj", "{C8B11FC1-98FA-4719-AC1D-DE16168F3523}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TEXTFinderHandler", "plugins\TEXTFinderHandler\TEXTFinderHandler.csproj", "{C8B11FC1-98FA-4719-AC1D-DE16168F3523}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSearch", "plugins\FileSearch\FileSearch.csproj", "{E0E90557-CA0C-47DE-AE0F-720A24C1761B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSearch", "plugins\FileSearch\FileSearch.csproj", "{E0E90557-CA0C-47DE-AE0F-720A24C1761B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CB63B250-ACFB-4ADF-AEDC-7F64EE94ABF0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "plugins", "plugins", "{CD5879F2-556B-4B92-A946-939285A16D6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +46,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F82DD8E9-A6CE-429D-826D-390FE442DF7A} = {CB63B250-ACFB-4ADF-AEDC-7F64EE94ABF0}
+		{9E268652-7728-41C0-A8C7-B8E6924DA658} = {CD5879F2-556B-4B92-A946-939285A16D6C}
+		{CF8093FA-40F2-442F-8BF7-DDAA3A5BD1D9} = {CB63B250-ACFB-4ADF-AEDC-7F64EE94ABF0}
+		{C8B11FC1-98FA-4719-AC1D-DE16168F3523} = {CD5879F2-556B-4B92-A946-939285A16D6C}
+		{E0E90557-CA0C-47DE-AE0F-720A24C1761B} = {CD5879F2-556B-4B92-A946-939285A16D6C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58378DC6-BFA9-4CCC-8B73-7CE2DEB0AE2A}
